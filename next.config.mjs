@@ -1,31 +1,19 @@
+import withPWA from 'next-pwa';
+
 /** @type {import('next').NextConfig} */
+const nextConfig = {};
 
-const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    dangerouslyAllowSVG: true,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
+export default withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  runtimeCaching: [
+    {
+      urlPattern: /^https:.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'https-calls',
+        networkTimeoutSeconds: 15,
       },
-      {
-        protocol: "http",
-        hostname: "**",
-      },
-    ],
-  },
-  transpilePackages: [
-    "antd",
-    "rc-util",
-    "@babel/runtime",
-    "@ant-design/icons",
-    "@ant-design/icons-svg",
-    "rc-pagination",
-    "rc-picker",
-    "rc-tree",
-    "rc-table",
+    },
   ],
-};
-
-export default nextConfig;
+});
