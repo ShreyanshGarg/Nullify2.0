@@ -9,12 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/nextjs-registry": "^1.0.2",
+    "@ant-design/nextjs-registry": "^1.0.0",
     "antd": "^5.22.2",
-    "next": "14.2.18",
+    "next": "^14.2.5",
     "next-pwa": "^5.6.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@types/next-pwa": "^5.6.9",

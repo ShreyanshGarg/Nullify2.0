@@ -1,12 +1,15 @@
-export const metadata = {
-  title: "Nullify",
-  description: "Bill Splitting made easy",
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { ConfigProvider } from "antd";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "PWA App",
+  description: "PWA App",
   manifest: "/manifest.json",
-  icons: {
-    apple: "/img.png",
-  },
-  themeColor: "#ffffff",
-  applicationName: "Nullify",
 };
 
 export default function RootLayout({
@@ -16,12 +19,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="mobile-web-app-capable" content="yes" />
-      </head>
-      <body>{children}</body>
+      <body>
+        <AntdRegistry>
+          <main className="flex-grow overflow-auto mt-[80px] sm:mt-[62px] lg:mt-[65px]">
+            <ConfigProvider
+              theme={{
+                token: {
+                  colorText: "#00224E",
+                  colorPrimary: "#00224E",
+                },
+              }}
+            >
+              {children}
+            </ConfigProvider>
+          </main>
+        </AntdRegistry>
+      </body>
     </html>
   );
 }
