@@ -6,7 +6,7 @@ import InstallButton from "@/components/InstallButton";
 import dynamic from "next/dynamic";
 
 // const AlarmButton = dynamic(() => import("@/components/AlarmButton"), {
-//   ssr: false, // 서버 사이드 렌더링을 하지 않도록 설정
+//   ssr: false, 
 // });
 
 const Home = () => {

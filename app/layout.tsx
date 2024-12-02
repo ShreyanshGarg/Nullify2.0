@@ -4,8 +4,6 @@ import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "PWA App",
   description: "PWA App",
@@ -21,12 +19,12 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AntdRegistry>
-          <main className="flex-grow overflow-auto mt-[80px] sm:mt-[62px] lg:mt-[65px]">
+          <main className="flex-grow overflow-auto bg-[#111418]">
             <ConfigProvider
               theme={{
                 token: {
-                  colorText: "#00224E",
-                  colorPrimary: "#00224E",
+                  colorText: "#FFFFFF",
+                  colorPrimary: "#B57EDC",
                 },
               }}
             >
