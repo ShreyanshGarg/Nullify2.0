@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
+import BottomNavigation from "../components/BottomNavigation";
 
 export const metadata: Metadata = {
   title: "PWA App",
@@ -17,21 +17,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <AntdRegistry>
-          <main className="flex-grow overflow-auto bg-[#111418]">
-            <ConfigProvider
-              theme={{
-                token: {
-                  colorText: "#FFFFFF",
-                  colorPrimary: "#B57EDC",
-                },
-              }}
-            >
-              {children}
-            </ConfigProvider>
-          </main>
-        </AntdRegistry>
+      <body className="bg-[#111418] h-screen">
+        <main className="flex h-full w-full">
+          <div className="sm:block">
+            <BottomNavigation />
+          </div>
+          <div className="flex-grow">
+            <AntdRegistry>
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: "#FFFFFF",
+                    colorPrimary: "#B57EDC",
+                  },
+                }}
+              >
+                {children}
+              </ConfigProvider>
+            </AntdRegistry>
+          </div>
+        </main>
+
       </body>
     </html>
   );

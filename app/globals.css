@@ -34,3 +34,19 @@ a {
     color-scheme: dark;
   }
 }
+
+.bg-custom {
+  background-color: #111418;
+}
+
+.text-danger {
+  color: #e57373;
+}
+
+.text-success {
+  color: #8bc34a;
+}
+
+.text-gray {
+  color: #9caaba;
+}
