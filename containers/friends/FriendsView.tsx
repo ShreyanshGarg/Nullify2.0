@@ -57,7 +57,7 @@ const FriendsViewPage = () => {
                 Jan 15
               </p>
             </div>
-            <p className="text-base font-normal">$20</p>
+            <p className="text-base font-normal">$20</p> 
           </div>
         </div>
         <div className="flex justify-center">
