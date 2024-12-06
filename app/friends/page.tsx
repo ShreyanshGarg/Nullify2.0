@@ -9,4 +9,3 @@ const { Title } = Typography;
 export default function Page() {
   return <FriendsPage />;
 }
-

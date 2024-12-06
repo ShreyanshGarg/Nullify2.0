@@ -50,3 +50,15 @@ a {
 .text-gray {
   color: #9caaba;
 }
+
+.expense-modal .ant-modal-content {
+  background-color: #111418 !important;
+  padding: 0px !important;
+}
+
+.expense-modal .ant-picker-input > input::placeholder {
+  color: #9caaba !important;
+}
+.expense-modal .ant-picker-input > .ant-picker-suffix {
+  color: #9caaba !important;
+}

@@ -1,18 +1,33 @@
 import { Card, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import AddExpenseModal from "./AddExpenseModal";
 
 const FriendsViewPage = () => {
-    const router = useRouter();
-  
-    const handleBackClick = () => {
-      router.push("/friends");
-    };
-    return (
+  const router = useRouter();
+  const [isAddExpenseModalOpen, setIsExpenseModalOpen] =
+    useState<boolean>(false);
+
+  const handleBackClick = () => {
+    router.push("/friends");
+  };
+  return (
+    <>
+      {isAddExpenseModalOpen && (
+        <AddExpenseModal
+          isAddExpenseModalOpen={isAddExpenseModalOpen}
+          setIsExpenseModalOpen={setIsExpenseModalOpen}
+        />
+      )}
+
       <div className="text-white min-h-screen flex flex-col justify-between">
         <div>
           <div className="flex items-center bg-custom p-4 pb-2 justify-between">
-            <ArrowLeftOutlined className="text-white" onClick={handleBackClick}/>
+            <ArrowLeftOutlined
+              className="text-white"
+              onClick={handleBackClick}
+            />
           </div>
           <div className="p-4">
             <div className="flex flex-col items-center gap-4">
@@ -57,7 +72,7 @@ const FriendsViewPage = () => {
                 Jan 15
               </p>
             </div>
-            <p className="text-base font-normal">$20</p> 
+            <p className="text-base font-normal">$20</p>
           </div>
         </div>
         <div className="flex justify-center">
@@ -68,13 +83,17 @@ const FriendsViewPage = () => {
             >
               Settle Up
             </Button>
-            <Button className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-xl h-10 px-4 !bg-[#283039] !border-[#283039] !text-white text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px]">
+            <Button
+              className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-xl h-10 px-4 !bg-[#283039] !border-[#283039] !text-white text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px]"
+              onClick={() => setIsExpenseModalOpen(true)}
+            >
               Add Expense
             </Button>
           </div>
         </div>
       </div>
-    );
-  };
-  
-  export default FriendsViewPage;
+    </>
+  );
+};
+
+export default FriendsViewPage;
