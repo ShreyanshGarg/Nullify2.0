@@ -17,7 +17,7 @@ const BottomNavigation = () => {
   return (
     <div
       className="navigation z-40
-    fixed bottom-0 w-full border-t border-gray-800 bg-[#1E1E1E] flex justify-around
+    fixed bottom-0 w-full border-t border-gray-800 bg-[#283039] flex justify-around
     md:static md:bottom-auto md:w-20 md:h-screen md:flex-col md:border-t-0 md:border-r sm:border-r"
     >
       {tabs.map((tab) => (

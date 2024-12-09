@@ -1,4 +1,3 @@
-'use client'
 import { Avatar, Button } from "antd";
 import { ArrowLeftOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -6,13 +5,13 @@ import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import SettleUpModal from "./SettleUpModal";
 
-const FriendsViewPage = () => {
+const GroupsViewPage = () => {
     const router = useRouter();
     const [isAddExpenseModalOpen, setIsExpenseModalOpen] = useState<boolean>(false);
     const [isSettleUpModalOpen, setIsSettleUpModalOpen] = useState<boolean>(false);
 
     const handleBackClick = () => {
-        router.push("/friends");
+        router.push("/groups");
     };
 
     return (
@@ -33,14 +32,14 @@ const FriendsViewPage = () => {
 
             <div className="text-white flex-1 flex flex-col pt-0">
                 <div>
-                    <div className="flex items-center bg-custom p-4 py-0 mt-4 justify-between">
+                    <div className="flex items-center bg-custom p-4 pb-0 justify-between">
                         <ArrowLeftOutlined className="text-white" onClick={handleBackClick} />
                     </div>
                     <div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex flex-col items-center">
                                 <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                                    Sophia Hall
+                                    Split Group 
                                 </h1>
                                 <p className="text-gray text-base font-normal">$0.00</p>
                             </div>
@@ -104,4 +103,4 @@ const FriendsViewPage = () => {
     );
 };
 
-export default FriendsViewPage;
+export default GroupsViewPage;
