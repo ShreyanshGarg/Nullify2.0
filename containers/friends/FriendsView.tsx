@@ -39,7 +39,7 @@ const FriendsViewPage = () => {
                     <div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex flex-col items-center">
-                                <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                                <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
                                     Sophia Hall
                                 </h1>
                                 <p className="text-gray text-base font-normal">$0.00</p>
@@ -62,8 +62,8 @@ const FriendsViewPage = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col justify-center">
-                                <p className="text-white text-sm leading-normal line-clamp-1">Dinner</p>
-                                <p className="text-danger text-xs leading-normal line-clamp-1">You Owe</p>
+                                <p className="text-white text-md leading-normal line-clamp-1">Dinner</p>
+                                <p className="text-danger text-sm leading-normal line-clamp-1">You Owe</p>
                             </div>
                         </div>
                         <p className="text-danger text-sm">$20</p>
@@ -77,8 +77,8 @@ const FriendsViewPage = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col justify-center">
-                                <p className="text-white text-sm leading-normal line-clamp-1">Dinner</p>
-                                <p className="text-success text-xs leading-normal line-clamp-1">Owes You</p>
+                                <p className="text-white text-md leading-normal line-clamp-1">Dinner</p>
+                                <p className="text-success text-sm leading-normal line-clamp-1">Owes You</p>
                             </div>
                         </div>
                         <p className="text-success text-sm">$20</p>

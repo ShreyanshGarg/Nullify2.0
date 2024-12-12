@@ -75,9 +75,13 @@ a {
 }
 
 .custom-input .ant-btn {
-  background-color: transparent !important;
+  background-color: #B57EDC;
   border: 1px solid gray;
-  color: gray;
+  color: #fff;
+}
+
+.custom-input .ant-btn .anticon svg {
+  fill: #fff !important;
 }
 
 

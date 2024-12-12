@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Button, List, Typography, Avatar, Input, Space, GetProps } from "antd";
 import { useRouter } from "next/navigation";
 const { Title } = Typography;
@@ -30,21 +30,18 @@ const FriendsListPage = () => {
     router.push(`/friends/${id}`);
   };
 
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
+    console.log(info?.source, value);
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1">
-      <Title level={4} className="mt-8">
+      <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Overall, you owe <span className="text-danger">$250.00</span>
-      </Title>
+      </h1>
 
       <div className="custom-input py-5">
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Search
-            placeholder="Search..."
-            allowClear
-            onSearch={onSearch}
-          />
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Search placeholder="Search..." allowClear onSearch={onSearch} />
         </Space>
       </div>
 
@@ -52,7 +49,10 @@ const FriendsListPage = () => {
         itemLayout="horizontal"
         dataSource={friends}
         renderItem={(friend) => (
-          <List.Item onClick={() => handleFriendClick(friend.id)} className="cursor-pointer flex justify-between items-center">
+          <List.Item
+            onClick={() => handleFriendClick(friend.id)}
+            className="cursor-pointer flex justify-between items-center"
+          >
             <div className="flex items-center gap-4">
               <Avatar
                 style={{
@@ -63,8 +63,14 @@ const FriendsListPage = () => {
                 {friend.name[0]}
               </Avatar>
               <div>
-                <p className="text-white text-md leading-normal line-clamp-1">{friend.name}</p>
-                <p className={`${friend.status === "you owe" ? "text-danger" : "text-success"} text-xs leading-normal line-clamp-1`}>
+                <p className="text-white text-[16px] leading-normal line-clamp-1">
+                  {friend.name}
+                </p>
+                <p
+                  className={`${
+                    friend.status === "you owe" ? "text-danger" : "text-success"
+                  } text-sm leading-normal line-clamp-1`}
+                >
                   {friend.status === "you owe" ? "Owes You" : "Settled Up"}
                 </p>
               </div>
@@ -72,16 +78,13 @@ const FriendsListPage = () => {
 
             <div className="flex flex-col items-end text-right">
               {friend.amount && <p className="text-danger text-sm">$20</p>}
-
             </div>
           </List.Item>
         )}
       />
 
       <div className="text-center mt-6">
-        <Button type="primary">
-          Add more friends
-        </Button>
+        <Button type="primary">Add more friends</Button>
       </div>
     </div>
   );

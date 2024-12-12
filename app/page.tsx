@@ -1,24 +1,11 @@
 "use client";
 
-// import AppBar from "@/components/AppBar";
-// import BottomNav from "@/components/BottomNav";
-import InstallButton from "@/components/InstallButton";
 import dynamic from "next/dynamic";
-
-// const AlarmButton = dynamic(() => import("@/components/AlarmButton"), {
-//   ssr: false, 
-// });
+import { redirect } from "next/navigation";
 
 const Home = () => {
-  return (
-    <div>
-      {/* <AppBar> */}
-      {/* <AlarmButton /> */}
-      <InstallButton />
-      {/* </AppBar> */}
-      {/* <BottomNav /> */}
-    </div>
-  );
+  redirect('/login');
+  return null;
 };
 
 export default Home;

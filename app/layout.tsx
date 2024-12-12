@@ -3,7 +3,6 @@ import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 import BottomNavigation from "../components/BottomNavigation";
-import TopNavigation from "@/components/TopNavigation";
 import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
@@ -17,7 +16,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <html lang="en">
       <body className="bg-[#111418] h-screen flex flex-col">
@@ -40,9 +38,9 @@ export default function RootLayout({
           </div>
 
           {/* Bottom Navigation */}
-          <div className="sm:block">
-            <BottomNavigation />
-          </div>
+            <div className="sm:block">
+              <BottomNavigation />
+            </div>
         </AuthProvider>
 
       </body>
