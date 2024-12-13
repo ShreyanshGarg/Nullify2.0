@@ -38,7 +38,7 @@ const GroupsViewPage = () => {
                     <div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex flex-col items-center">
-                                <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                                <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
                                     Split Group 
                                 </h1>
                                 <p className="text-gray text-base font-normal">$0.00</p>
