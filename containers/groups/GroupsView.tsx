@@ -65,10 +65,10 @@ const GroupsViewPage = () => {
                 </div>
               </div>
               <div className="flex flex-col justify-center">
-                <p className="text-white text-sm leading-normal line-clamp-1">
+                <p className="text-white text-md leading-normal line-clamp-1">
                   Dinner
                 </p>
-                <p className="text-danger text-xs leading-normal line-clamp-1">
+                <p className="text-danger text-sm leading-normal line-clamp-1">
                   You Owe
                 </p>
               </div>
@@ -84,10 +84,10 @@ const GroupsViewPage = () => {
                 </div>
               </div>
               <div className="flex flex-col justify-center">
-                <p className="text-white text-sm leading-normal line-clamp-1">
+                <p className="text-white text-md leading-normal line-clamp-1">
                   Dinner
                 </p>
-                <p className="text-success text-xs leading-normal line-clamp-1">
+                <p className="text-success text-sm leading-normal line-clamp-1">
                   Owes You
                 </p>
               </div>
