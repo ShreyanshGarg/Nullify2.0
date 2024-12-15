@@ -55,9 +55,12 @@ const SettleUpModal: React.FC<SettleUpModalProps> = ({
                 top: 0,
                 margin: 0,
                 maxWidth: "100vw",
+                height: "100vh",
+                maxHeight: "100vh",
             }}
             className="expense-modal"
             closable={false}
+            maskClosable={false}
         >
             <div className="space-y-4 p-4 pt-0 ">
                 <Form

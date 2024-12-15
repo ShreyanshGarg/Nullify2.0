@@ -66,6 +66,7 @@ const SelectBalanceModal: React.FC<SelectBalanceModalProps> = ({
         }}
         className="expense-modal"
         closable={false}
+        maskClosable={false}
       >
         <div className="space-y-4 pl-4 pr-6 pt-0 ">
           <List

@@ -29,22 +29,18 @@ const GroupsListPage = () => {
     router.push(`/groups/${id}`);
   };
 
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
+    console.log(info?.source, value);
 
   return (
     <div className="bg-custom p-4 flex-1 pt-0">
-      {/* Search Bar */}
       <Title level={4} className="mt-8">
         Overall, you owe <span className="text-danger">$250.00</span>
       </Title>
 
       <div className="custom-input py-5">
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Search
-            placeholder="Search..."
-            allowClear
-            onSearch={onSearch}
-          />
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Search placeholder="Search..." allowClear onSearch={onSearch} />
         </Space>
       </div>
 
@@ -52,7 +48,10 @@ const GroupsListPage = () => {
         itemLayout="horizontal"
         dataSource={groups}
         renderItem={(group) => (
-          <List.Item onClick={() => handleGroupClick(group.id)} className="cursor-pointer flex justify-between items-center">
+          <List.Item
+            onClick={() => handleGroupClick(group.id)}
+            className="cursor-pointer flex justify-between items-center"
+          >
             <div className="flex items-center gap-4">
               <Avatar
                 style={{
@@ -63,34 +62,29 @@ const GroupsListPage = () => {
                 {group.name[0]}
               </Avatar>
               <div>
-                <p className="text-white text-md leading-normal line-clamp-1">{group.name}</p>
-
-                {/* <div
-                  className={group.status === "you owe" ? "text-danger" : "text-success"}
-                  style={{ fontSize: '12px' }} // Smaller font for status
-                >
-                  {group.status === "you owe" ? "Owes You" : "Settled Up"}
-                </div> */}
-                <p className={`${group.status === "you owe" ? "text-danger" : "text-success"} text-xs leading-normal line-clamp-1`}>
-                  {group.status === "you owe" ? "Owes You" : "Settled Up"}
+                <p className="text-white text-[16px] leading-normal line-clamp-1">
+                  {group.name}
                 </p>
 
+                <p
+                  className={`${
+                    group.status === "you owe" ? "text-danger" : "text-success"
+                  } text-sm leading-normal line-clamp-1`}
+                >
+                  {group.status === "you owe" ? "Owes You" : "Settled Up"}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-col items-end text-right">
-              {/* Amount */}
               {group.amount && <p className="text-danger text-sm">$20</p>}
-
             </div>
           </List.Item>
         )}
       />
 
       <div className="text-center mt-6">
-        <Button type="primary">
-          Start a new group
-        </Button>
+        <Button type="primary">Start a new group</Button>
       </div>
     </div>
   );

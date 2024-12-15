@@ -33,8 +33,8 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     setIsExpenseModalOpen(false);
   };
 
-  const onFinish = (values:any) => {
-    console.log('Success:', values);
+  const onFinish = (values: any) => {
+    console.log("Success:", values);
   };
 
   return (
@@ -60,9 +60,12 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
         top: 0,
         margin: 0,
         maxWidth: "100vw",
+        maxHeight: "100vh",
+        height: "100vh",
       }}
       className="expense-modal"
       closable={false}
+      maskClosable={false}
     >
       <div className="space-y-4 p-4 pt-0 ">
         <Form
@@ -160,15 +163,14 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             </Radio.Group>
           </Form.Item>
           <Form.Item label={null}>
-          <Button
-            type="primary"
-            className="w-full h-12 mt-4"
-            htmlType="submit"
-          >
-            Add Expense
-          </Button>
+            <Button
+              type="primary"
+              className="w-full h-12 mt-4"
+              htmlType="submit"
+            >
+              Add Expense
+            </Button>
           </Form.Item>
-
         </Form>
       </div>
     </Modal>
