@@ -37,7 +37,7 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
 
   const handleSelectFriend = (id: string, name: string) => {
     updatePaidBy(name, id);
-         setIsWhoPaidModalOpen(false);
+        setIsWhoPaidModalOpen(false);
   };
 
   useEffect(() => {
