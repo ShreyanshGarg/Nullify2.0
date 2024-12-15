@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "prepare": "husky init"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
+   "*.{ts,tsx,js,jsx}": [
+      "prettier --write"
     ]
   },
   "dependencies": {
