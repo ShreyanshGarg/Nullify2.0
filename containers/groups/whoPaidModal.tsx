@@ -1,7 +1,7 @@
 import { Avatar, Button, List, Modal } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import PaidAmountsModal from "./paidAmountsModal";
+import PaidAmountsModal from "./PaidAmountsModal";
 
 interface WhoPaidModalProps {
   isWhoPaidModalOpen: boolean;
@@ -49,7 +49,7 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
       {paidAmountsModal && (
         <PaidAmountsModal
           isPaidAmountsModalOpen={paidAmountsModal}
-          setIsPaidAmountsModalOpen={setPaidAmountsModal}
+           setIsPaidAmountsModalOpen={setPaidAmountsModal}
         />
       )}
       <Modal

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, Form } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
-import WhoPaidModal from "./whoPaidModal";
-import AdjustSplitModal from "./adjustSplitModal";
+import WhoPaidModal from "./WhoPaidModal";
+import AdjustSplitModal from "./AdjustSplitModal";
 
 interface AddExpenseModalProps {
   isAddExpenseModalOpen: boolean;

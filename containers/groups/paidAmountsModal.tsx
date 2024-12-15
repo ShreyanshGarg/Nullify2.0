@@ -1,7 +1,7 @@
 import { Avatar, Button, Input, List, Modal } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import AdjustSplitModal from "./adjustSplitModal";
+import AdjustSplitModal from "./AdjustSplitModal";
 
 interface PaidAmountsModalProps {
   isPaidAmountsModalOpen: boolean;
