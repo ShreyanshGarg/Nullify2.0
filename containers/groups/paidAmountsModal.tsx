@@ -91,7 +91,8 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
                 </div>
                 <Input
                   placeholder="₹ 0.00"
-                  className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] border-0 border-b border-gray-500 focus:border-b-white focus:ring-0"
+                  type="number"
+                  className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:ring-0"
                 />
               </List.Item>
             )}
@@ -112,7 +113,7 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
               className="!bg-[#B57EDC] !border-[#283039] w-full"
               onClick={() => console.log("Add Expense clicked")}
             >
-              Add Expense
+              Confirm
             </Button>
           </div>
         </div>

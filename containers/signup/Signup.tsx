@@ -5,7 +5,6 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GoogleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import Link from "next/link";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: Array<string>;
@@ -17,7 +16,7 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-const LoginPage = () => {
+const SignupPage = () => {
   const [prompt, setPrompt] = useState<Event | null>(null);
   const { data: session, status } = useSession();
   console.log(status);
@@ -55,17 +54,15 @@ const LoginPage = () => {
           <div className="flex items-center bg-custom p-4 pb-0 justify-between">
             <ArrowLeftOutlined
               className="text-white"
-              onClick={handleBackClick}
+                onClick={handleBackClick}
             />
           </div>
           <div className="text-center p-4">
-            <p className="text-white text-xl leading-normal">
-              Welcome back to Splitwise!
-            </p>
-            <p className="text-gray text-sm leading-normal break-words">
-              Let's get started.
-            </p>
-          </div>
+          <p className="text-white text-xl leading-normal">Welcome!</p>
+          <p className="text-gray text-sm leading-normal break-words">
+            Let's get started.
+          </p>
+        </div>
           <div className="p-4">
             <Form
               className=""
@@ -74,6 +71,19 @@ const LoginPage = () => {
               }}
               // onFinish={onFinish}
             >
+              <Form.Item
+                label="Full Name"
+                name="name"
+                rules={[{ required: true }]}
+                className="!mb-2"
+              >
+                <Input
+                  placeholder="Name"
+                  //   value={expense}
+                  //   onChange={(e) => setExpense(e.target.value)}
+                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
+                />
+              </Form.Item>
               <Form.Item
                 label="Email Address"
                 name="email"
@@ -100,23 +110,28 @@ const LoginPage = () => {
                   className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>
+              <Form.Item
+                label="Phone Number"
+                name="phone"
+                rules={[{ required: true }]}
+                className="!mb-2"
+              >
+                <Input
+                  placeholder="10 characters"
+                  //   value={expense}
+                  //   onChange={(e) => setExpense(e.target.value)}
+                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
+                />
+              </Form.Item>
               <Form.Item label={null}>
                 <Button
                   type="primary"
                   className="w-full h-12 mt-4"
                   htmlType="submit"
                 >
-                  Log in
+                  Sign up
                 </Button>
               </Form.Item>
-              <div className="text-right mb-4 text-primary">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
             </Form>
           </div>
         </div>
@@ -125,4 +140,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

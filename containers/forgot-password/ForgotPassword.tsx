@@ -17,7 +17,7 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-const LoginPage = () => {
+const ForgotPassword = () => {
   const [prompt, setPrompt] = useState<Event | null>(null);
   const { data: session, status } = useSession();
   console.log(status);
@@ -60,10 +60,10 @@ const LoginPage = () => {
           </div>
           <div className="text-center p-4">
             <p className="text-white text-xl leading-normal">
-              Welcome back to Splitwise!
+              Reset your password
             </p>
             <p className="text-gray text-sm leading-normal break-words">
-              Let's get started.
+              Enter your email address or phone number and we'll send you a link to reset your password.
             </p>
           </div>
           <div className="p-4">
@@ -88,13 +88,13 @@ const LoginPage = () => {
                 />
               </Form.Item>
               <Form.Item
-                label="Password"
-                name="password"
+                label="Phone Number"
+                name="phone"
                 rules={[{ required: true }]}
                 className="!mb-2"
               >
                 <Input
-                  placeholder="Minimum 6 characters"
+                  placeholder="10 characters"
                   //   value={expense}
                   //   onChange={(e) => setExpense(e.target.value)}
                   className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
@@ -106,17 +106,9 @@ const LoginPage = () => {
                   className="w-full h-12 mt-4"
                   htmlType="submit"
                 >
-                  Log in
+                  Reset Password
                 </Button>
               </Form.Item>
-              <div className="text-right mb-4 text-primary">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
             </Form>
           </div>
         </div>
@@ -125,4 +117,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPassword;

@@ -34,13 +34,13 @@ const GroupsListPage = () => {
 
   return (
     <div className="bg-custom p-4 flex-1 pt-0">
-      <Title level={4} className="mt-8">
+       <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Overall, you owe <span className="text-danger">$250.00</span>
-      </Title>
+      </h1>
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search placeholder="Search..." allowClear onSearch={onSearch} />
+          <Search placeholder="Search Groups..." allowClear onSearch={onSearch} />
         </Space>
       </div>
 

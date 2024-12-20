@@ -41,7 +41,7 @@ const FriendsListPage = () => {
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search placeholder="Search..." allowClear onSearch={onSearch} />
+          <Search placeholder="Search Friends..." allowClear onSearch={onSearch} />
         </Space>
       </div>
 
