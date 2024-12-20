@@ -1,7 +1,7 @@
 import { Avatar, Button, List, Modal } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import PaidAmountsModal from "./PaidAmountsModal";
+import PaidAmountsModal from "./paidAmountsModal";
 
 interface WhoPaidModalProps {
   isWhoPaidModalOpen: boolean;
