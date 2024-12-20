@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, Form } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
-import WhoPaidModal from "./whoPaidModal";
-import AdjustSplitModal from "./adjustSplitModal";
+import WhoPaidModal from "./WhoPaidModal";
+import AdjustSplitModal from "./AdjustSplitModal";
 
 interface AddExpenseModalProps {
   isAddExpenseModalOpen: boolean;
@@ -22,6 +22,9 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const [paidById, setPaidById] = useState("234");
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
 
+  // Create form instance using Form.useForm
+  const [form] = Form.useForm();
+
   const handleConfirm = () => {
     // Add logic for confirming expense
     console.log("Expense:", expense);
@@ -37,6 +40,34 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
+  };
+
+  const handleAmountValidation = () => {
+    if (!amount || amount === "0") {
+      // Trigger validation for the amount field
+      form.setFields([
+        {
+          name: "amount",
+          errors: ["Please fill in the amount before proceeding."],
+        },
+      ]);
+    } else {
+      setIsWhoPaidModalOpen(true);
+    }
+  };
+
+  const handleSplitValidation = () => {
+    if (!amount || amount === "0") {
+      // Trigger validation for the amount field
+      form.setFields([
+        {
+          name: "amount",
+          errors: ["Please fill in the amount before proceeding."],
+        },
+      ]);
+    } else {
+      setAdjustSplitModal(true);
+    }
   };
 
   return (
@@ -86,6 +117,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
       >
         <div className="space-y-4 p-4 pt-0 ">
           <Form
+            form={form} // Connect form instance here
             className=""
             initialValues={{
               splitOptions: "split_equally",
@@ -126,7 +158,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             </div>
           </Form>
 
-          <div className="flex items-center gap-4 bg-custom min-h-[72px] py-2">
+          <div className="flex items-center gap-4 bg-custom min-h-[72px] py-1">
             <div className="flex-1 flex flex-col justify-center">
               <h1 className="!leading-tight !tracking-[-0.015em] !text-lg font-semibold py-5">
                 Paid by
@@ -135,7 +167,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 className={`flex items-center justify-between ${
                   !amount ? "cursor-not-allowed opacity-50" : ""
                 }`}
-                onClick={() => amount && setIsWhoPaidModalOpen(true)}
+                onClick={handleAmountValidation}
               >
                 <p className="text-gray text-sm leading-normal line-clamp-1">
                   {paidBy}
@@ -145,7 +177,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-custom min-h-[72px] py-2">
+          <div className="flex items-center gap-4 bg-custom min-h-[72px] py-1">
             <div className="flex-1 flex flex-col justify-center">
               <h1 className="!leading-tight !tracking-[-0.015em] !text-lg font-semibold py-5">
                 Split
@@ -154,7 +186,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 className={`flex items-center justify-between ${
                   !amount ? "cursor-not-allowed opacity-50" : ""
                 }`}
-                onClick={() => amount && setAdjustSplitModal(true)}
+                onClick={handleSplitValidation}
               >
                 <p className="text-gray text-sm leading-normal line-clamp-1">
                   Equally
@@ -163,6 +195,14 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               </div>
             </div>
           </div>
+        </div>
+        <div className="p-6">
+          <Button
+            className="!bg-[#B57EDC] !border-[#283039] w-full"
+            onClick={() => console.log("Add Expense clicked")}
+          >
+            Add Expense
+          </Button>
         </div>
       </Modal>
     </div>

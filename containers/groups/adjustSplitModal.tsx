@@ -119,7 +119,7 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                                 </p>
                               </div>
                             </div>
-                            <Checkbox />
+                            <Checkbox checked={true} />
                           </List.Item>
                         )}
                       />
@@ -164,8 +164,9 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                               </div>
                             </div>
                             <Input
+                              type="number"
                               placeholder="₹ 0.00"
-                              className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] border-0 border-b border-gray-500 focus:border-b-white focus:ring-0"
+                              className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:border-b-white focus:ring-0"
                             />
                           </List.Item>
                         )}
@@ -192,7 +193,7 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
               className="!bg-[#B57EDC] !border-[#283039] w-full"
               onClick={() => console.log("Add Expense clicked")}
             >
-              Add Expense
+              Confirm
             </Button>
           </div>
         </div>

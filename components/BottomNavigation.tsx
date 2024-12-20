@@ -12,7 +12,10 @@ import { usePathname } from "next/navigation";
 
 const BottomNavigation = () => {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/login";
+  const isSetupPage = pathname === "/setup";
+  const isSignupPage = pathname === "/signup";
+  const isLoginPage = pathname === '/login';
+  const isForgotPasswordPage = pathname === '/forgot-password';
 
   const [activeTab, setActiveTab] = useState("friends");
 
@@ -23,7 +26,7 @@ const BottomNavigation = () => {
     { key: "account", label: "Account", icon: <WalletOutlined />, href: "/account" },
   ];
 
-  if (isLoginPage) {
+  if (isSetupPage || isSignupPage || isLoginPage || isForgotPasswordPage) {
     return null;
   }
 
