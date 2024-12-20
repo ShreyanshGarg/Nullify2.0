@@ -1,20 +1,16 @@
-import { Avatar, Button, List, Modal } from "antd";
+import { Avatar, Button, Input, List, Modal } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import PaidAmountsModal from "./PaidAmountsModal";
+import AdjustSplitModal from "./AdjustSplitModal";
 
-interface WhoPaidModalProps {
-  isWhoPaidModalOpen: boolean;
-  setIsWhoPaidModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updatePaidBy: (name: string, id: string) => void;
-  paidById: string;
+interface PaidAmountsModalProps {
+  isPaidAmountsModalOpen: boolean;
+  setIsPaidAmountsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
-  isWhoPaidModalOpen,
-  setIsWhoPaidModalOpen,
-  updatePaidBy,
-  paidById,
+const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
+  isPaidAmountsModalOpen,
+  setIsPaidAmountsModalOpen,
 }) => {
   const friends = [
     {
@@ -33,41 +29,32 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
     },
   ];
 
-  const [paidAmountsModal, setPaidAmountsModal] = useState(false);
-
-  const handleSelectFriend = (id: string, name: string) => {
-    updatePaidBy(name, id);
-        setIsWhoPaidModalOpen(false);
-  };
-
-  useEffect(() => {
-    console.log("Selected Friend ID:", paidById);
-  }, [paidById]);
+  const [adjustSplitModal, setAdjustSplitModal] = useState(false);
 
   return (
     <div>
-      {paidAmountsModal && (
-        <PaidAmountsModal
-          isPaidAmountsModalOpen={paidAmountsModal}
-          setIsPaidAmountsModalOpen={setPaidAmountsModal}
+      {adjustSplitModal && (
+        <AdjustSplitModal
+          isAdjustSplitModalOpen={adjustSplitModal}
+          setIsAdjustSplitModalOpen={setAdjustSplitModal}
         />
       )}
       <Modal
         title={
           <div className="bg-[#111418] p-4 pb-0 flex items-center justify-between">
             <h2 className="!leading-tight !tracking-[-0.015em] !text-lg font-bold">
-              Who Paid?
+              Enter Paid Amounts
             </h2>
             <Button
               type="text"
               icon={<CloseOutlined className="text-white" />}
-              onClick={() => setIsWhoPaidModalOpen(false)}
+              onClick={() => setIsPaidAmountsModalOpen(false)}
               className="text-white hover:bg-transparent"
             />
           </div>
         }
-        open={isWhoPaidModalOpen}
-        onCancel={() => setIsWhoPaidModalOpen(false)}
+        open={isPaidAmountsModalOpen}
+        onCancel={() => setIsPaidAmountsModalOpen(false)}
         footer={null}
         style={{
           backgroundColor: "#111418",
@@ -86,10 +73,7 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
             itemLayout="horizontal"
             dataSource={friends}
             renderItem={(friend) => (
-              <List.Item
-                onClick={() => handleSelectFriend(friend.id, friend.name)}
-                className="cursor-pointer flex justify-between items-center"
-              >
+              <List.Item className="cursor-pointer flex justify-between items-center">
                 <div className="flex items-center gap-4">
                   <Avatar
                     style={{
@@ -105,26 +89,37 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
                     </p>
                   </div>
                 </div>
-
-                {/* Tick icon for selected user */}
-                <div className="flex flex-col items-end text-right">
-                  {paidById === friend.id && (
-                    <CheckOutlined className="text-green-500 text-lg" />
-                  )}
-                </div>
+                <Input
+                  placeholder="₹ 0.00"
+                  type="number"
+                  className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:ring-0"
+                />
               </List.Item>
             )}
           />
+          <div
+            className="fixed bottom-0 left-0 w-full bg-[#111418] p-4"
+            style={{ maxWidth: "480px", margin: "0 auto" }}
+          >
+            <div className="text-center m-4">
+              <p className="text-white text-md leading-normal">
+                ₹0.00 of ₹0.00
+              </p>
+              <p className="text-gray text-sm leading-normal break-words">
+                ₹0.00 left.
+              </p>
+            </div>
+            <Button
+              className="!bg-[#B57EDC] !border-[#283039] w-full"
+              onClick={() => console.log("Add Expense clicked")}
+            >
+              Confirm
+            </Button>
+          </div>
         </div>
-        <Button
-          className="m-6 !bg-[#283039] !border-[#283039]"
-          onClick={() => setPaidAmountsModal(true)}
-        >
-          Multiple people
-        </Button>
       </Modal>
     </div>
   );
 };
 
-export default WhoPaidModal;
+export default PaidAmountsModal;
