@@ -29,6 +29,12 @@ a {
   text-decoration: none;
 }
 
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -52,7 +58,7 @@ a {
 }
 
 .text-primary {
-  color: #B57EDC !important;
+  color: #b57edc !important;
 }
 
 .expense-modal .ant-modal-content {
@@ -79,7 +85,7 @@ a {
 }
 
 .custom-input .ant-btn {
-  background-color: #B57EDC;
+  background-color: #b57edc;
   border: 1px solid gray;
   color: #fff;
 }
@@ -87,8 +93,6 @@ a {
 .custom-input .ant-btn .anticon svg {
   fill: #fff !important;
 }
-
-
 
 body {
   background-color: #f9fafb; /* Light gray background */
@@ -131,3 +135,5 @@ button {
   align-items: center;
   gap: 8px;
 }
+
+

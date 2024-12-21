@@ -42,31 +42,25 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     console.log("Success:", values);
   };
 
-  const handleAmountValidation = () => {
-    if (!amount || amount === "0") {
-      // Trigger validation for the amount field
+  const handleValidation = () => {
+    if (!amount) {
       form.setFields([
         {
           name: "amount",
           errors: ["Please fill in the amount before proceeding."],
         },
       ]);
-    } else {
-      setIsWhoPaidModalOpen(true);
-    }
-  };
-
-  const handleSplitValidation = () => {
-    if (!amount || amount === "0") {
-      // Trigger validation for the amount field
+      return false;
+    } else if (amount === "0") {
       form.setFields([
         {
           name: "amount",
-          errors: ["Please fill in the amount before proceeding."],
+          errors: ["Amount should be > 0 before proceeding."],
         },
       ]);
+      return false;
     } else {
-      setAdjustSplitModal(true);
+      return true;
     }
   };
 
@@ -167,7 +161,11 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 className={`flex items-center justify-between ${
                   !amount ? "cursor-not-allowed opacity-50" : ""
                 }`}
-                onClick={handleAmountValidation}
+                onClick={() => {
+                  handleValidation() === true
+                    ? setIsWhoPaidModalOpen(true)
+                    :""
+                }}
               >
                 <p className="text-gray text-sm leading-normal line-clamp-1">
                   {paidBy}
@@ -186,7 +184,11 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 className={`flex items-center justify-between ${
                   !amount ? "cursor-not-allowed opacity-50" : ""
                 }`}
-                onClick={handleSplitValidation}
+                onClick={() => {
+                  handleValidation() === true
+                    ? setAdjustSplitModal(true)
+                    :""
+                }}
               >
                 <p className="text-gray text-sm leading-normal line-clamp-1">
                   Equally
