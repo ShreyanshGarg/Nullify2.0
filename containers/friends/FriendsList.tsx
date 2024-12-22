@@ -1,11 +1,19 @@
 "use client";
+import { useGetAllUsersQuery } from "@/provider/redux/services/user";
 import { Button, List, Typography, Avatar, Input, Space, GetProps } from "antd";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import AddMoreFriendsModal from "./AddMoreFriendsModal";
 const { Title } = Typography;
 
 const FriendsListPage = () => {
   const router = useRouter();
+  
+  const {data, isError, isLoading} = useGetAllUsersQuery();
+  console.log(data, isError, isLoading);
 
+  const [isAddMoreFriendsModalOpen, setIsAddMoreFriendsModalOpen] =
+    useState<boolean>(false);
   type SearchProps = GetProps<typeof Input.Search>;
   const { Search } = Input;
 
@@ -35,13 +43,23 @@ const FriendsListPage = () => {
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1">
+      {isAddMoreFriendsModalOpen && (
+        <AddMoreFriendsModal
+          isAddMoreFriendsModalOpen={isAddMoreFriendsModalOpen}
+          setIsAddMoreFriendsModalOpen={setIsAddMoreFriendsModalOpen}
+        />
+      )}
       <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Overall, you owe <span className="text-danger">$250.00</span>
       </h1>
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search placeholder="Search Friends..." allowClear onSearch={onSearch} />
+          <Search
+            placeholder="Search Friends..."
+            allowClear
+            onSearch={onSearch}
+          />
         </Space>
       </div>
 
@@ -84,7 +102,12 @@ const FriendsListPage = () => {
       />
 
       <div className="text-center mt-6">
-        <Button type="primary">Add more friends</Button>
+        <Button
+          onClick={() => setIsAddMoreFriendsModalOpen(true)}
+          type="primary"
+        >
+          Add more friends
+        </Button>
       </div>
     </div>
   );

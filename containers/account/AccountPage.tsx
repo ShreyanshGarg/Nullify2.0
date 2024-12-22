@@ -53,12 +53,10 @@ const AccountPage = () => {
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1 text-white">
-      {/* Header */}
       <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Account
       </h1>
 
-      {/* Profile Section */}
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center">
           <Avatar

@@ -1,11 +1,15 @@
+import SettleUpModal from "@/components/SettleUpModal";
 import { Button, List, Typography, Avatar, Input, Space, GetProps } from "antd";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import SelectBalanceModal from "./SelectBalanceModal";
+import AddGroupMembers from "./AddGroupMembers";
 const { Title } = Typography;
+type SearchProps = GetProps<typeof Input.Search>;
 
 const GroupsListPage = () => {
   const router = useRouter();
 
-  type SearchProps = GetProps<typeof Input.Search>;
   const { Search } = Input;
 
   const groups = [
@@ -31,16 +35,29 @@ const GroupsListPage = () => {
 
   const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
     console.log(info?.source, value);
+  const [showSettleUpModal, setShowSettleUpModal] = useState(false);
+  const [showAddGroupMembersModal, setShowAddGroupMembersModal] = useState(false);
 
   return (
     <div className="bg-custom p-4 flex-1 pt-0">
-       <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
+      <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Overall, you owe <span className="text-danger">$250.00</span>
       </h1>
 
+      {showAddGroupMembersModal && (
+        <AddGroupMembers
+        isAddGroupMembersOpen={showAddGroupMembersModal}
+        setIsAddGroupMembersOpen={setShowAddGroupMembersModal}
+        />
+      )}
+
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search placeholder="Search Groups..." allowClear onSearch={onSearch} />
+          <Search
+            placeholder="Search Groups..."
+            allowClear
+            onSearch={onSearch}
+          />
         </Space>
       </div>
 
@@ -84,7 +101,7 @@ const GroupsListPage = () => {
       />
 
       <div className="text-center mt-6">
-        <Button type="primary">Start a new group</Button>
+        <Button type="primary" onClick={() => setShowAddGroupMembersModal(true)}>Start a new group</Button>
       </div>
     </div>
   );
