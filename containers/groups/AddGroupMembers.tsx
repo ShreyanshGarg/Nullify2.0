@@ -63,6 +63,7 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
           selectedFriends={selectedFriends}
           isCreateGroupModalOpen={showCreateGroupModal}
           setIsCreateGroupModalOpen={setShowCreateGroupModal}
+          setIsAddGroupMembersOpen={setIsAddGroupMembersOpen}
         />
       )}
       <Modal

@@ -8,11 +8,13 @@ interface CreateGroupModalProps {
   isCreateGroupModalOpen: boolean;
   setIsCreateGroupModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedFriends: string[];
+  setIsAddGroupMembersOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   isCreateGroupModalOpen,
   setIsCreateGroupModalOpen,
+  setIsAddGroupMembersOpen,
   selectedFriends,
 }) => {
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
@@ -25,6 +27,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
       selectedFriends,
     };
     console.log("Form submitted with values:", formData);
+    setIsCreateGroupModalOpen(false);
+    setIsAddGroupMembersOpen(false);
   };
 
   return (

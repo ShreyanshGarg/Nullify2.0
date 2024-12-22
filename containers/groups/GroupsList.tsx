@@ -5,11 +5,11 @@ import { useState } from "react";
 import SelectBalanceModal from "./SelectBalanceModal";
 import AddGroupMembers from "./AddGroupMembers";
 const { Title } = Typography;
+type SearchProps = GetProps<typeof Input.Search>;
 
 const GroupsListPage = () => {
   const router = useRouter();
 
-  type SearchProps = GetProps<typeof Input.Search>;
   const { Search } = Input;
 
   const groups = [
@@ -40,7 +40,7 @@ const GroupsListPage = () => {
 
   return (
     <div className="bg-custom p-4 flex-1 pt-0">
-       <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
+      <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
         Overall, you owe <span className="text-danger">$250.00</span>
       </h1>
 
@@ -53,7 +53,11 @@ const GroupsListPage = () => {
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search placeholder="Search Groups..." allowClear onSearch={onSearch} />
+          <Search
+            placeholder="Search Groups..."
+            allowClear
+            onSearch={onSearch}
+          />
         </Space>
       </div>
 
