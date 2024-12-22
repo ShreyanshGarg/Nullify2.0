@@ -1,10 +1,14 @@
 "use client";
+import { useGetAllUsersQuery } from "@/provider/redux/services/user";
 import { Button, List, Typography, Avatar, Input, Space, GetProps } from "antd";
 import { useRouter } from "next/navigation";
 const { Title } = Typography;
 
 const FriendsListPage = () => {
   const router = useRouter();
+  
+  const {data, isError, isLoading} = useGetAllUsersQuery();
+  console.log(data, isError, isLoading);
 
   type SearchProps = GetProps<typeof Input.Search>;
   const { Search } = Input;
