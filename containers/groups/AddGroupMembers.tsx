@@ -1,10 +1,6 @@
-import { Avatar, Button, GetProps, List, Modal, Space, Input } from "antd";
-import {
-  CloseOutlined,
-  CheckOutlined,
-  ArrowRightOutlined,
-} from "@ant-design/icons";
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
+import { Avatar, Button, List, Modal, Space, Input } from "antd";
+import { CloseOutlined, CheckOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import CreateGroupModal from "./CreateGroupModal";
 
 interface AddGroupMembersProps {
@@ -12,13 +8,21 @@ interface AddGroupMembersProps {
   setIsAddGroupMembersOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface Friend {
+  id: string;
+  name: string;
+  status?: string;
+  amount?: string;
+  avatarColor: string;
+}
+
 const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
   isAddGroupMembersOpen,
   setIsAddGroupMembersOpen,
 }) => {
-  type SearchProps = GetProps<typeof Input.Search>;
   const { Search } = Input;
-  const friends = [
+
+  const friends: Friend[] = [
     {
       id: "234",
       name: "Kanika",
@@ -40,21 +44,38 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
       amount: "",
       avatarColor: "#a6a6a6",
     },
+    {
+      id: "236",
+      name: "Anjali",
+      status: "settled up",
+      amount: "",
+      avatarColor: "#a6a6a6",
+    },
   ];
 
-  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedFriends, setSelectedFriends] = useState<Friend[]>([]);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
 
-  const handleSelectFriend = useCallback((id: string) => {
-    setSelectedFriends((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((friendId) => friendId !== id)
-        : [...prevSelected, id]
-    );
-  }, []);
+  const handleSelectFriend = useCallback(
+    (friend: Friend) => {
+      setSelectedFriends((prevSelected) => {
+        const isAlreadySelected = prevSelected.some(
+          (selected) => selected.id === friend.id
+        );
+        if (isAlreadySelected) {
+          return prevSelected.filter((selected) => selected.id !== friend.id);
+        } else {
+          return [
+            ...prevSelected,
+            { id: friend.id, name: friend.name, avatarColor: friend.avatarColor },
+          ];
+        }
+      });
+    },
+    []
+  );
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const onSearch = (value: string) => console.log(value);
 
   return (
     <div>
@@ -110,7 +131,7 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
             dataSource={friends}
             renderItem={(friend) => (
               <List.Item
-                onClick={() => handleSelectFriend(friend.id)}
+                onClick={() => handleSelectFriend(friend)}
                 className="cursor-pointer flex justify-between items-center"
               >
                 <div className="flex items-center gap-4">
@@ -129,9 +150,9 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
                   </div>
                 </div>
 
-                {selectedFriends.includes(friend.id) && (
-                  <CheckOutlined className="text-green-500 text-lg" />
-                )}
+                {selectedFriends.some(
+                  (selected) => selected.id === friend.id
+                ) && <CheckOutlined className="text-green-500 text-lg" />}
               </List.Item>
             )}
           />
@@ -140,7 +161,7 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
           <Button
             className="!bg-[#B57EDC] !border-[#283039]"
             onClick={() => setShowCreateGroupModal(true)}
-            disabled={selectedFriends.length == 0}
+            disabled={selectedFriends.length === 0}
           >
             Next
             <ArrowRightOutlined />

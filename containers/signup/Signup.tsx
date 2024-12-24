@@ -44,7 +44,7 @@ const SignupPage = () => {
   }, [status, router]);
 
   const handleBackClick = () => {
-    router.push("/setup");
+    router.push("/auth");
   };
 
   return (

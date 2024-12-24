@@ -103,16 +103,18 @@ const AccountPage = () => {
           <AndroidOutlined />
           Get the App
         </Button>
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button
-          type="primary"
-          className="w-full"
-          onClick={() => signOut({ callbackUrl: "/setup" })}
-        >
-          Log Out
-        </Button>
+        <div className="mt-8 mb-6 text-center">
+          <Button
+            type="primary"
+            className="w-full"
+            onClick={() => signOut({ callbackUrl: "/auth" })}
+          >
+            Log Out
+          </Button>
+        </div>
+        <div className="mt-8 mb-6 text-center">
+         
+        </div>
       </div>
     </div>
   );

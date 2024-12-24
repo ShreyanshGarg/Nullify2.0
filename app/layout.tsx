@@ -4,9 +4,9 @@ import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 import BottomNavigation from "../components/BottomNavigation";
-import { AuthProvider } from "@/components/AuthProvider";
 import { Provider } from "react-redux";
 import { store } from "@/provider/redux/store";
+import { AuthProvider } from "./lib/AuthProvider";
 
 // export const metadata: Metadata = {
 //   title: "PWA App",

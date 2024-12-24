@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   UserAddOutlined,
   TeamOutlined,
@@ -12,23 +12,43 @@ import { usePathname } from "next/navigation";
 
 const BottomNavigation = () => {
   const pathname = usePathname();
-  const isSetupPage = pathname === "/setup";
+  const isAuthPage = pathname === "/auth";
   const isSignupPage = pathname === "/signup";
-  const isLoginPage = pathname === '/login';
-  const isForgotPasswordPage = pathname === '/forgot-password';
-
-  const [activeTab, setActiveTab] = useState("friends");
+  const isLoginPage = pathname === "/login";
+  const isForgotPasswordPage = pathname === "/forgot-password";
 
   const tabs = [
     { key: "groups", label: "Groups", icon: <TeamOutlined />, href: "/groups" },
-    { key: "friends", label: "Friends", icon: <UserAddOutlined />, href: "/friends" },
-    { key: "activity", label: "Activity", icon: <LineChartOutlined />, href: "/activity" },
-    { key: "account", label: "Account", icon: <WalletOutlined />, href: "/account" },
+    {
+      key: "friends",
+      label: "Friends",
+      icon: <UserAddOutlined />,
+      href: "/friends",
+    },
+    {
+      key: "activity",
+      label: "Activity",
+      icon: <LineChartOutlined />,
+      href: "/activity",
+    },
+    {
+      key: "account",
+      label: "Account",
+      icon: <WalletOutlined />,
+      href: "/account",
+    },
   ];
-
-  if (isSetupPage || isSignupPage || isLoginPage || isForgotPasswordPage) {
+  if (isAuthPage || isSignupPage || isLoginPage || isForgotPasswordPage) {
     return null;
   }
+
+  const initialActiveTab = tabs.find((tab) => pathname.startsWith(tab.href))?.key || "friends";
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
+
+  useEffect(() => {
+    const currentTab = tabs.find((tab) => pathname.startsWith(tab.href))?.key || "friends";
+    setActiveTab(currentTab);
+  }, [pathname]);
 
   return (
     <div
@@ -46,9 +66,7 @@ const BottomNavigation = () => {
             <div className="mb-1">{tab.icon}</div>
             <div>{tab.label}</div>
             {activeTab === tab.key && (
-              <div
-                className="absolute md:top-0 md:left-0 md:h-full md:border-l-2 md:border-[#B57EDC]"
-              />
+              <div className="absolute md:top-0 md:left-0 md:h-full md:border-l-2 md:border-[#B57EDC]" />
             )}
           </div>
         </Link>
