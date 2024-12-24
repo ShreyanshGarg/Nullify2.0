@@ -10,6 +10,7 @@ import {
   QuestionCircleOutlined,
   AndroidOutlined,
 } from "@ant-design/icons";
+import InstallButton from "./InstallButton";
 
 const { Title } = Typography;
 interface BeforeInstallPromptEvent extends Event {
@@ -46,10 +47,10 @@ const AccountPage = () => {
     },
   ];
 
-  const installApp = () => {
-    // if (!prompt) return;
-    // (prompt as BeforeInstallPromptEvent)?.prompt();
-  };
+  // const installApp = () => {
+  //   if (!prompt) return;
+  //   (prompt as BeforeInstallPromptEvent)?.prompt();
+  // };
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1 text-white">
@@ -96,23 +97,17 @@ const AccountPage = () => {
         <p className="text-white text-lg font-semibold">
           There&apos;s more to love in the app
         </p>
-        <Button
-          className="h-10 p-4 mt-1 !bg-[#283039] !border-[#283039] !text-white text-sm font-bold leading-normal tracking-[0.015em]"
-          onClick={() => installApp()}
-        >
-          <AndroidOutlined />
-          Get the App
-        </Button>
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button
-          type="primary"
-          className="w-full"
-          onClick={() => signOut({ callbackUrl: "/setup" })}
-        >
-          Log Out
-        </Button>
+        <InstallButton />
+        <div className="mt-8 mb-6 text-center">
+          <Button
+            type="primary"
+            className="w-full"
+            onClick={() => signOut({ callbackUrl: "/auth" })}
+          >
+            Log Out
+          </Button>
+        </div>
+        <div className="mt-8 mb-6 text-center"></div>
       </div>
     </div>
   );

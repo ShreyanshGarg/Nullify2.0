@@ -45,7 +45,7 @@ const ForgotPassword = () => {
   }, [status, router]);
 
   const handleBackClick = () => {
-    router.push("/setup");
+    router.push("/auth");
   };
 
   return (

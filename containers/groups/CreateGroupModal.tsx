@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import { Modal, Input, Button, Form, Checkbox } from "antd";
-import { CloseOutlined, RightOutlined, CheckOutlined } from "@ant-design/icons";
-import WhoPaidModal from "./WhoPaidModal";
+import { Modal, Input, Button, Form, Checkbox, Avatar } from "antd";
+import { CloseOutlined, CheckOutlined, TeamOutlined } from "@ant-design/icons";
 import AdjustSplitModal from "./AdjustSplitModal";
+
+interface Friend {
+  id: string;
+  name: string;
+  avatarColor: string;
+}
 
 interface CreateGroupModalProps {
   isCreateGroupModalOpen: boolean;
   setIsCreateGroupModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedFriends: string[];
+  selectedFriends: Friend[];
   setIsAddGroupMembersOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -17,6 +22,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   setIsAddGroupMembersOpen,
   selectedFriends,
 }) => {
+  console.log(selectedFriends);
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
 
   const [form] = Form.useForm();
@@ -69,8 +75,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
         maskClosable={false}
       >
         <div className="space-y-4 p-4 pt-0 mt-6">
-          <Form form={form} onFinish={onFinish}>
+          <Form
+            form={form}
+            onFinish={onFinish}
+            initialValues={{
+              simplify_debt: true,
+            }}
+          >
             <div className="p-0">
+              {/* Group Name */}
               <Form.Item
                 label="Group Name"
                 name="group_name"
@@ -81,13 +94,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               >
                 <Input
                   placeholder="Please enter your group name?"
-                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
+                  className="h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>
-              <p className="text-gray text-sm leading-normal break-words mt-2">
-                You have selected {selectedFriends.length} friends.
-              </p>
-              <div className="mt-6">
+
+              {/* Simplify Debt Checkbox */}
+              <div className="mt-4">
                 <Form.Item
                   name="simplify_debt"
                   valuePropName="checked"
@@ -98,17 +110,38 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                   </Checkbox>
                 </Form.Item>
               </div>
+
+              {/* Selected Friends Info */}
+              <p className="text-gray text-sm leading-normal break-words mt-8">
+                You have selected {selectedFriends.length} friends:
+              </p>
+              <ul className="text-white list-none flex flex-wrap gap-4 mt-8">
+                {selectedFriends.map((friend) => (
+                  <li key={friend.id} className="flex flex-col items-center">
+                    <Avatar
+                      style={{
+                        backgroundColor: friend.avatarColor,
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {friend.name[0]}
+                    </Avatar>
+                    <p className="text-gray text-sm leading-normal mt-2 overflow-hidden text-ellipsis whitespace-nowrap max-w-[9ch]">
+                      {friend.name}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </Form>
         </div>
 
-        <div className="p-6 flex justify-end">
+        <div className="p-6 flex justify-center">
           <Button
             className="!bg-[#B57EDC] !border-[#283039]"
             onClick={() => form.submit()}
           >
-            Done
-            <CheckOutlined />
+            Create Group
           </Button>
         </div>
       </Modal>

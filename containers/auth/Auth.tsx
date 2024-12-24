@@ -16,7 +16,7 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-const SetupPage = () => {
+const AuthPage = () => {
   const [prompt, setPrompt] = useState<Event | null>(null);
   const { data: session, status } = useSession();
   console.log(status);
@@ -91,4 +91,4 @@ const SetupPage = () => {
   );
 };
 
-export default SetupPage;
+export default AuthPage;

@@ -14,10 +14,10 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
-  // Redirect to /setup if the user is unauthenticated and accessing a protected route
+  // Redirect to /auth if the user is unauthenticated and accessing a protected route
   if (isProtectedRoute && !token) {
-    const setupUrl = new URL("/setup", request.url);
-    return NextResponse.redirect(setupUrl);
+    const authUrl = new URL("/auth", request.url);
+    return NextResponse.redirect(authUrl);
   }
 
   // Allow the request to proceed
