@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   UserAddOutlined,
   TeamOutlined,
@@ -38,19 +37,13 @@ const BottomNavigation = () => {
       href: "/account",
     },
   ];
+
   if (isAuthPage || isSignupPage || isLoginPage || isForgotPasswordPage) {
     return null;
   }
 
-  const initialActiveTab =
+  const activeTab =
     tabs.find((tab) => pathname.startsWith(tab.href))?.key || "friends";
-  const [activeTab, setActiveTab] = useState(initialActiveTab);
-
-  useEffect(() => {
-    const currentTab =
-      tabs.find((tab) => pathname.startsWith(tab.href))?.key || "friends";
-    setActiveTab(currentTab);
-  }, [pathname]);
 
   return (
     <nav className="fixed bottom-0 left-0 w-full bg-[#283039] border-t border-gray-800 md:fixed md:top-0 md:left-0 md:w-20 md:h-full md:border-t-0 md:border-r">
@@ -58,7 +51,6 @@ const BottomNavigation = () => {
         {tabs.map((tab) => (
           <Link key={tab.key} href={tab.href} passHref>
             <div
-              onClick={() => setActiveTab(tab.key)}
               className={`text-center cursor-pointer text-sm py-4 md:py-6 relative ${
                 activeTab === tab.key ? "text-[#B57EDC]" : "text-white"
               }`}
