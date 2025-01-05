@@ -94,9 +94,6 @@ const AccountPage = () => {
       />
 
       <div className="mt-8 text-center">
-        <p className="text-white text-lg font-semibold">
-          There&apos;s more to love in the app
-        </p>
         <InstallButton />
         <div className="mt-8 mb-6 text-center">
           <Button
