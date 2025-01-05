@@ -63,7 +63,7 @@ const ForgotPassword = () => {
               Reset your password
             </p>
             <p className="text-gray text-sm leading-normal break-words">
-              Enter your email address or phone number and we'll send you a link to reset your password.
+              Enter your email address and we'll send you a link to reset your password.
             </p>
           </div>
           <div className="p-4">
@@ -82,19 +82,6 @@ const ForgotPassword = () => {
               >
                 <Input
                   placeholder="Email"
-                  //   value={expense}
-                  //   onChange={(e) => setExpense(e.target.value)}
-                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
-                />
-              </Form.Item>
-              <Form.Item
-                label="Phone Number"
-                name="phone"
-                rules={[{ required: true }]}
-                className="!mb-2"
-              >
-                <Input
-                  placeholder="10 characters"
                   //   value={expense}
                   //   onChange={(e) => setExpense(e.target.value)}
                   className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"

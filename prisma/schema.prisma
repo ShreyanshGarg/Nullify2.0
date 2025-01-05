@@ -1,18 +1,97 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String
-  password  String
+model Users {
+  user_id      Int        @id @default(autoincrement())
+  name         String
+  phone_number String     @unique
+  password     String
+  email        String     @unique
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+  uuid         String?    @unique
+  deleted_at   DateTime?
+  is_verified  Boolean    @default(false)
+  expenses     Expenses[]
+  friends1     Friends[]  @relation("Friend1")
+  friends2     Friends[]  @relation("Friend2")
+  groups       Groups[]   @relation("UserGroups")
+
+  @@index([email])
+  @@index([name])
+}
+
+model Friends {
+  friendship_id Int                  @id @default(autoincrement())
+  user_id1      Int
+  user_id2      Int
+  balances      Decimal
+  status        String
+  created_at    DateTime             @default(now())
+  updated_at    DateTime             @updatedAt
+  deleted_at    DateTime?
+  expenses      Expenses[]
+  groupBalances FriendGroupBalance[]
+  user1         Users                @relation("Friend1", fields: [user_id1], references: [user_id])
+  user2         Users                @relation("Friend2", fields: [user_id2], references: [user_id])
+
+  @@index([user_id2])
+  @@index([balances])
+}
+
+model Groups {
+  group_id       Int                  @id @default(autoincrement())
+  name           String
+  member_details Json
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+  deleted_at     DateTime?
+  expenses       Expenses[]
+  groupBalances  FriendGroupBalance[]
+  users          Users[]              @relation("UserGroups")
+
+  @@index([name])
+}
+
+model Expenses {
+  expense_id    Int       @id @default(autoincrement())
+  name          String
+  total_amount  Decimal
+  split_type    String
+  paid_by       Int
+  split_details Json
+  group_id      Int?
+  is_settled    Boolean
+  created_at    DateTime  @default(now())
+  friendship_id Int?
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
+  friend        Friends?  @relation(fields: [friendship_id], references: [friendship_id])
+  group         Groups?   @relation(fields: [group_id], references: [group_id])
+  payer         Users     @relation(fields: [paid_by], references: [user_id])
+
+  @@index([paid_by])
+  @@index([group_id])
+}
+
+model FriendGroupBalance {
+  id            Int       @id @default(autoincrement())
+  friendship_id Int
+  group_id      Int
+  balances      Decimal
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
+  friend        Friends   @relation(fields: [friendship_id], references: [friendship_id])
+  group         Groups    @relation(fields: [group_id], references: [group_id])
+
+  @@index([friendship_id])
+  @@index([group_id])
+  @@index([balances])
 }

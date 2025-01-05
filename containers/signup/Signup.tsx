@@ -5,6 +5,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GoogleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { useSignupMutation } from "@/provider/redux/services/user";
+import { notification } from "antd";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: Array<string>;
@@ -20,6 +22,8 @@ const SignupPage = () => {
   const [prompt, setPrompt] = useState<Event | null>(null);
   const { data: session, status } = useSession();
   console.log(status);
+  const [signup, { isLoading }] = useSignupMutation();
+
   const router = useRouter();
 
   const installApp = () => {
@@ -47,6 +51,33 @@ const SignupPage = () => {
     router.push("/auth");
   };
 
+
+  const onFinish = async (values: {
+    name: string;
+    email: string;
+    password: string;
+    phone_number: string;
+  }) => {
+    try {
+      const response = await signup(values).unwrap();
+      
+      notification.success({
+        message: "Signup Successful",
+        description: response.message,
+        placement: "topRight",
+      });
+  
+      router.push("/auth");
+    } catch (error: any) {
+      notification.error({
+        message: "Signup Failed",
+        description: error.data?.error || "Failed to sign up",
+        placement: "topRight",
+      });
+    }
+  };
+  
+
   return (
     <>
       <div className="text-white flex-1 flex flex-col pt-0">
@@ -54,72 +85,84 @@ const SignupPage = () => {
           <div className="flex items-center bg-custom p-4 pb-0 justify-between">
             <ArrowLeftOutlined
               className="text-white"
-                onClick={handleBackClick}
+              onClick={handleBackClick}
             />
           </div>
           <div className="text-center p-4">
-          <p className="text-white text-xl leading-normal">Welcome!</p>
-          <p className="text-gray text-sm leading-normal break-words">
-            Let's get started.
-          </p>
-        </div>
+            <p className="text-white text-xl leading-normal">Welcome!</p>
+            <p className="text-gray text-sm leading-normal break-words">
+              Let's get started.
+            </p>
+          </div>
           <div className="p-4">
             <Form
               className=""
               initialValues={{
                 splitOptions: "split_equally",
               }}
-              // onFinish={onFinish}
+              onFinish={onFinish}
             >
               <Form.Item
                 label="Full Name"
                 name="name"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: "Please enter your name" }]}
                 className="!mb-2"
               >
                 <Input
                   placeholder="Name"
-                  //   value={expense}
-                  //   onChange={(e) => setExpense(e.target.value)}
                   className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>
               <Form.Item
                 label="Email Address"
                 name="email"
-                rules={[{ required: true }]}
+                rules={[
+                  { required: true, message: "Please enter your email" },
+                  {
+                    type: "email",
+                    message: "Please enter a valid email address",
+                  },
+                ]}
                 className="!mb-2"
               >
                 <Input
                   placeholder="Email"
-                  //   value={expense}
-                  //   onChange={(e) => setExpense(e.target.value)}
-                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
+                  className="h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>
               <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true }]}
+                rules={[
+                  { required: true, message: "Please enter your password" },
+                  {
+                    min: 6,
+                    message: "Password must be at least 6 characters long",
+                  },
+                ]}
                 className="!mb-2"
               >
                 <Input
+                  type="password"
                   placeholder="Minimum 6 characters"
-                  //   value={expense}
-                  //   onChange={(e) => setExpense(e.target.value)}
-                  className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
+                  className="h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>
+
               <Form.Item
                 label="Phone Number"
-                name="phone"
-                rules={[{ required: true }]}
+                name="phone_number"
+                rules={[
+                  { required: true, message: "Please enter your phone number" },
+                  {
+                    min: 10,
+                    message: "Phone Number must be at least 10 characters long",
+                  },
+                ]}
                 className="!mb-2"
               >
                 <Input
                   placeholder="10 characters"
-                  //   value={expense}
-                  //   onChange={(e) => setExpense(e.target.value)}
                   className=" h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
               </Form.Item>

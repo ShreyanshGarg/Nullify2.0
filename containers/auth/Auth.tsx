@@ -45,7 +45,7 @@ const AuthPage = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-screen bg-custom">
+      <div className="flex flex-col justify-center items-center min-h-screen bg-custom mx-6">
         {/* <div>
           <Image
             src="/image.jpeg"
@@ -81,7 +81,7 @@ const AuthPage = () => {
             onClick={() => signIn("google")}
           >
             <GoogleOutlined />
-            Sign in with Google
+            Continue with Google
           </Button> 
           </div>
          
