@@ -7,6 +7,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import { Provider } from "react-redux";
 import { store } from "@/provider/redux/store";
 import { AuthProvider } from "./lib/AuthProvider";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 export default function ClientLayout({
   children,
@@ -17,7 +18,8 @@ export default function ClientLayout({
     <html lang="en">
       <body className="bg-[#111418]">
         <Provider store={store}>
-          <AuthProvider>
+          <UserProvider>
+          {/* <AuthProvider> */}
             <div className="flex min-h-screen">
               {/* Main content wrapper */}
               <div className="flex-1 flex flex-col md:ml-20">
@@ -39,7 +41,8 @@ export default function ClientLayout({
 
               <BottomNavigation />
             </div>
-          </AuthProvider>
+          {/* </AuthProvider> */}
+          </UserProvider>
         </Provider>
       </body>
     </html>

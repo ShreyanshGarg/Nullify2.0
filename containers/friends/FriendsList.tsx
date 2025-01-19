@@ -1,45 +1,122 @@
 "use client";
-import { useGetAllUsersQuery } from "@/provider/redux/services/user";
-import { Button, List, Typography, Avatar, Input, Space, GetProps } from "antd";
+
+import {
+  Button,
+  List,
+  Typography,
+  Avatar,
+  Input,
+  Space,
+  Modal,
+  Tooltip,
+  Spin,
+} from "antd";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddMoreFriendsModal from "./AddMoreFriendsModal";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  useCreateFriendshipMutation,
+  useLazySearchUserByEmailQuery,
+  useFetchFriendshipQuery,
+  useAcceptFriendshipMutation,
+  useDeclineFriendshipMutation,
+} from "@/provider/redux/services/user";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { notification } from "antd";
+
 const { Title } = Typography;
 
+interface User {
+  user_id1: string;
+  user_id2: string;
+  email: string;
+  name: string;
+  status?: string;
+  avatarColor?: string;
+}
+
 const FriendsListPage = () => {
+  const { user } = useUser();
+  const userId = user?.sub?.split("|")[1];
   const router = useRouter();
-  
-  const {data, isError, isLoading} = useGetAllUsersQuery();
-  console.log(data, isError, isLoading);
 
+  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isAddMoreFriendsModalOpen, setIsAddMoreFriendsModalOpen] =
-    useState<boolean>(false);
-  type SearchProps = GetProps<typeof Input.Search>;
-  const { Search } = Input;
+    useState(false);
 
-  const friends = [
-    {
-      id: "234",
-      name: "Kanika",
-      status: "you owe",
-      amount: "$250.00",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "235",
-      name: "Shreyansh Garg",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#0066cc",
-    },
-  ];
+  const [triggerSearch, { isLoading: isSearchLoading }] =
+    useLazySearchUserByEmailQuery();
+  const {
+    data: friends = [],
+    refetch,
+    isFetching,
+  } = useFetchFriendshipQuery(userId || "", { skip: !userId });
 
-  const handleFriendClick = (id: string) => {
-    router.push(`/friends/${id}`);
+  const [acceptFriendship] = useAcceptFriendshipMutation();
+  const [declineFriendship] = useDeclineFriendshipMutation();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth");
+      return;
+    }
+  }, [user, router]);
+
+  const onSearch = async (value: string) => {
+    setSearchEmail(value);
+    if (!value) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const response = await triggerSearch(value).unwrap();
+      const filteredResults = response.filter(
+        (result: User) => result.email !== user?.email
+      );
+      setSearchResults(filteredResults);
+    } catch (error) {
+      console.error("Error searching users:", error);
+    }
   };
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const handleAccept = async (friendId: string) => {
+    try {
+      const userId1 = user?.sub?.split("|")[1];
+      if (!userId1) {
+        console.error("User ID not found");
+        return;
+      }
+
+      await acceptFriendship({
+        user_id1: friendId,
+        user_id2: userId1,
+      }).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Failed to accept friend request:", error);
+    }
+  };
+
+  const handleDecline = async (friendId: string) => {
+    try {
+      const userId1 = user?.sub?.split("|")[1];
+      if (!userId1) {
+        console.error("User ID not found");
+        return;
+      }
+
+      await declineFriendship({
+        user_id1: friendId,
+        user_id2: userId1,
+      }).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Failed to decline friend request:", error);
+    }
+  };
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1">
@@ -55,51 +132,69 @@ const FriendsListPage = () => {
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Search
+          <Input.Search
             placeholder="Search Friends..."
             allowClear
             onSearch={onSearch}
+            loading={isSearchLoading || isFetching}
           />
         </Space>
       </div>
+      {isFetching ? (
+        <div className="flex justify-center mt-10">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <List
+          itemLayout="horizontal"
+          dataSource={friends.filter(
+            (friend: User) => friend.status !== "declined"
+          )}
+          renderItem={(friend: User) => {
+            const loggedInUserId = user?.sub?.split("|")[1];
+            const isRecipient = friend.user_id2 === loggedInUserId;
 
-      <List
-        itemLayout="horizontal"
-        dataSource={friends}
-        renderItem={(friend) => (
-          <List.Item
-            onClick={() => handleFriendClick(friend.id)}
-            className="cursor-pointer flex justify-between items-center"
-          >
-            <div className="flex items-center gap-4">
-              <Avatar
-                style={{
-                  backgroundColor: friend.avatarColor,
-                  verticalAlign: "middle",
-                }}
-              >
-                {friend.name[0]}
-              </Avatar>
-              <div>
-                <p className="text-white text-[16px] leading-normal line-clamp-1">
-                  {friend.name}
-                </p>
-                <p
-                  className={`${
-                    friend.status === "you owe" ? "text-danger" : "text-success"
-                  } text-sm leading-normal line-clamp-1`}
-                >
-                  {friend.status === "you owe" ? "Owes You" : "Settled Up"}
-                </p>
-              </div>
-            </div>
+            return (
+              <List.Item>
+                <div className="flex items-center gap-4">
+                  <Avatar>{friend.name[0]?.toUpperCase()}</Avatar>
+                  <div className="flex items-center justify-between w-full">
+                    <div>
+                      <Tooltip title={friend.email}>
+                        <p>{friend.name}</p>
+                      </Tooltip>
+                      {friend.status === "pending" && (
+                        <span className="text-gray">{friend.status}</span>
+                      )}
+                    </div>
 
-            <div className="flex flex-col items-end text-right">
-              {friend.amount && <p className="text-danger text-sm">$20</p>}
-            </div>
-          </List.Item>
-        )}
-      />
+                    {friend.status === "pending" && isRecipient && (
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          type="primary"
+                          onClick={() => handleAccept(friend.user_id1)}
+                        >
+                          <CheckOutlined />
+                        </Button>
+                        <Button
+                          danger
+                          onClick={() => handleDecline(friend.user_id1)}
+                        >
+                          <CloseOutlined />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </List.Item>
+            );
+          }}
+        />
+      )}
+
+      {searchResults.length === 0 && searchEmail && (
+        <p className="text-center text-white mt-4">No results found</p>
+      )}
 
       <div className="text-center mt-6">
         <Button

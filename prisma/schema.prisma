@@ -8,16 +8,14 @@ datasource db {
 }
 
 model Users {
-  user_id      Int        @id @default(autoincrement())
+  user_id      String     @id @default(uuid())
   name         String
-  phone_number String     @unique
-  password     String
   email        String     @unique
   created_at   DateTime   @default(now())
   updated_at   DateTime   @updatedAt
   uuid         String?    @unique
   deleted_at   DateTime?
-  is_verified  Boolean    @default(false)
+  email_verified  Boolean    @default(false)
   expenses     Expenses[]
   friends1     Friends[]  @relation("Friend1")
   friends2     Friends[]  @relation("Friend2")
@@ -29,8 +27,8 @@ model Users {
 
 model Friends {
   friendship_id Int                  @id @default(autoincrement())
-  user_id1      Int
-  user_id2      Int
+  user_id1      String               // Change to String to match Users model
+  user_id2      String               // Change to String to match Users model
   balances      Decimal
   status        String
   created_at    DateTime             @default(now())
@@ -44,6 +42,7 @@ model Friends {
   @@index([user_id2])
   @@index([balances])
 }
+
 
 model Groups {
   group_id       Int                  @id @default(autoincrement())
@@ -64,7 +63,7 @@ model Expenses {
   name          String
   total_amount  Decimal
   split_type    String
-  paid_by       Int
+  paid_by       String    // Change to String to match user_id in Users
   split_details Json
   group_id      Int?
   is_settled    Boolean
@@ -74,11 +73,12 @@ model Expenses {
   deleted_at    DateTime?
   friend        Friends?  @relation(fields: [friendship_id], references: [friendship_id])
   group         Groups?   @relation(fields: [group_id], references: [group_id])
-  payer         Users     @relation(fields: [paid_by], references: [user_id])
+  payer         Users     @relation(fields: [paid_by], references: [user_id])  // Relation updated
 
   @@index([paid_by])
   @@index([group_id])
 }
+
 
 model FriendGroupBalance {
   id            Int       @id @default(autoincrement())

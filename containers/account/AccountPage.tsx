@@ -11,6 +11,9 @@ import {
   AndroidOutlined,
 } from "@ant-design/icons";
 import InstallButton from "./InstallButton";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const { Title } = Typography;
 interface BeforeInstallPromptEvent extends Event {
@@ -24,6 +27,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const AccountPage = () => {
+  const router = useRouter();
+
   const accountOptions = [
     {
       icon: <MailOutlined />,
@@ -51,6 +56,15 @@ const AccountPage = () => {
   //   if (!prompt) return;
   //   (prompt as BeforeInstallPromptEvent)?.prompt();
   // };
+  const {user, error, isLoading} = useUser();
+  console.log(user);
+
+  useEffect(()=>{
+    if(!user){
+      // return <a href="/api/auth/logout">logout</a>
+      return router.push('/auth');
+    }
+  },[])
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1 text-white">
@@ -70,9 +84,9 @@ const AccountPage = () => {
           </Avatar>
           <div className="ml-4">
             <div className="p-4">
-              <p className="text-white text-xl leading-normal">Anjali Arora</p>
+              <p className="text-white text-xl leading-normal">{user?.nickname}</p>
               <p className="text-gray text-sm leading-normal break-words">
-                anjaliarora@gmail.com
+                {user?.email}
               </p>
             </div>
           </div>
@@ -99,7 +113,7 @@ const AccountPage = () => {
           <Button
             type="primary"
             className="w-full"
-            onClick={() => signOut({ callbackUrl: "/auth" })}
+            onClick={() => router.push('/api/auth/logout')}
           >
             Log Out
           </Button>
