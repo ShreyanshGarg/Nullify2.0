@@ -242,7 +242,7 @@ const FriendsListPage = () => {
         />
       )}
 
-      {searchResults.length === 0 && searchEmail && (
+      {searchResults.length === 0 && (
         <p className="text-center text-white mt-4">No results found</p>
       )}
     </div>
