@@ -216,7 +216,6 @@ const FriendsListPage = () => {
                   </div>
                 </div>
 
-                {/* Right-aligned buttons */}
                 {friend.status === "pending" && isRecipient && (
                   <div className="ml-auto flex gap-2">
                     <Button
@@ -242,9 +241,9 @@ const FriendsListPage = () => {
         />
       )}
 
-      {searchResults.length === 0 && (
+      {/* {searchResults.length === 0 && searchEmail && (
         <p className="text-center text-white mt-4">No results found</p>
-      )}
+      )} */}
     </div>
   );
 };
