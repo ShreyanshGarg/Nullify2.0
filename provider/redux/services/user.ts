@@ -44,6 +44,12 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["Friendship"], 
     }),
+    fetchFriendById: builder.query({
+      query: (friendId: string) => ({
+        url: `friends/${friendId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -53,4 +59,5 @@ export const {
   useFetchFriendshipQuery, 
   useAcceptFriendshipMutation,
   useDeclineFriendshipMutation,
+  useFetchFriendByIdQuery
 } = authApi;

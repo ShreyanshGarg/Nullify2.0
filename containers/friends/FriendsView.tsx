@@ -1,18 +1,21 @@
 "use client";
-import { Avatar, Button } from "antd";
+import { Avatar, Button, Tooltip } from "antd";
 import { ArrowLeftOutlined, CalendarOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import SettleUpModal from "../../components/SettleUpModal";
+import { useFetchFriendByIdQuery } from "@/provider/redux/services/user";
 
-const FriendsViewPage = () => {
+const FriendsViewPage = ({ pathId }: { pathId: string }) => {
+
   const router = useRouter();
   const [isAddExpenseModalOpen, setIsExpenseModalOpen] =
     useState<boolean>(false);
   const [isSettleUpModalOpen, setIsSettleUpModalOpen] =
     useState<boolean>(false);
 
+    const { data: friend, isLoading, error } = useFetchFriendByIdQuery(pathId as string);
   const handleBackClick = () => {
     router.push("/friends");
   };
@@ -44,9 +47,12 @@ const FriendsViewPage = () => {
           <div>
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col items-center">
+                <Tooltip title={friend?.email}>
+
                 <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
-                  Sophia Hall
+                  {friend?.name}
                 </h1>
+                </Tooltip>
                 <p className="text-gray text-base font-normal">$0.00</p>
               </div>
               <Button

@@ -14,7 +14,11 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import AddMoreFriendsModal from "./AddMoreFriendsModal";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import {
   useCreateFriendshipMutation,
   useLazySearchUserByEmailQuery,
@@ -24,6 +28,7 @@ import {
 } from "@/provider/redux/services/user";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { notification } from "antd";
+import { getRandomColor } from "@/app/lib/constants";
 
 const { Title } = Typography;
 
@@ -37,7 +42,7 @@ interface User {
 }
 
 const FriendsListPage = () => {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   const userId = user?.sub?.split("|")[1];
   const router = useRouter();
 
@@ -52,8 +57,9 @@ const FriendsListPage = () => {
     data: friends = [],
     refetch,
     isFetching,
+    // isLoading
   } = useFetchFriendshipQuery(userId || "", { skip: !userId });
-
+  // console.log(isFetching);
   const [acceptFriendship] = useAcceptFriendshipMutation();
   const [declineFriendship] = useDeclineFriendshipMutation();
 
@@ -118,6 +124,10 @@ const FriendsListPage = () => {
     }
   };
 
+  const handleFriendClick = (id: string) => {
+    router.push(`/friends/${id}`);
+  };
+
   return (
     <div className="bg-custom p-4 pt-0 flex-1">
       {isAddMoreFriendsModalOpen && (
@@ -126,9 +136,17 @@ const FriendsListPage = () => {
           setIsAddMoreFriendsModalOpen={setIsAddMoreFriendsModalOpen}
         />
       )}
-      <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em] mt-[3.5rem] mb-6">
-        Overall, you owe <span className="text-danger">$250.00</span>
-      </h1>
+      <div className="flex items-center justify-between mt-[3.5rem] mb-6">
+        <h1 className="text-[22px] text-[#fff] font-bold leading-tight tracking-[-0.015em]">
+          Overall, you owe <span className="text-danger">$250.00</span>
+        </h1>
+        <Button
+          onClick={() => setIsAddMoreFriendsModalOpen(true)}
+          type="primary"
+          icon={<UserAddOutlined />}
+          className="!ml-4"
+        />
+      </div>
 
       <div className="custom-input py-5">
         <Space direction="vertical" style={{ width: "100%" }}>
@@ -136,11 +154,11 @@ const FriendsListPage = () => {
             placeholder="Search Friends..."
             allowClear
             onSearch={onSearch}
-            loading={isSearchLoading || isFetching}
+            // loading={isSearchLoading || isFetching}
           />
         </Space>
       </div>
-      {isFetching ? (
+      {isFetching || isLoading ? (
         <div className="flex justify-center mt-10">
           <Spin size="large" />
         </div>
@@ -153,39 +171,71 @@ const FriendsListPage = () => {
           renderItem={(friend: User) => {
             const loggedInUserId = user?.sub?.split("|")[1];
             const isRecipient = friend.user_id2 === loggedInUserId;
+            const randomColor = getRandomColor(); //random color for friend's avatar
 
             return (
-              <List.Item>
+              <List.Item
+                onClick={() =>
+                  friend?.status !== "pending" &&
+                  handleFriendClick(friend.user_id2)
+                }
+                className="cursor-pointer flex justify-between items-center"
+              >
                 <div className="flex items-center gap-4">
-                  <Avatar>{friend.name[0]?.toUpperCase()}</Avatar>
-                  <div className="flex items-center justify-between w-full">
-                    <div>
-                      <Tooltip title={friend.email}>
-                        <p>{friend.name}</p>
-                      </Tooltip>
-                      {friend.status === "pending" && (
-                        <span className="text-gray">{friend.status}</span>
-                      )}
-                    </div>
+                  <Avatar
+                    style={{
+                      backgroundColor: randomColor,
+                      verticalAlign: "middle",
+                    }}
+                  >
+                    {friend.name[0]?.toUpperCase()}
+                  </Avatar>
+                  <div>
+                    <Tooltip title={friend.email}>
+                      <p className="text-white text-[16px] leading-normal line-clamp-1">
+                        {friend.name}
+                      </p>
+                    </Tooltip>
+                    {friend.status === "pending" && (
+                      <span className="text-gray">{friend.status}</span>
+                    )}
 
-                    {friend.status === "pending" && isRecipient && (
-                      <div className="flex gap-2 ml-4">
-                        <Button
-                          type="primary"
-                          onClick={() => handleAccept(friend.user_id1)}
-                        >
-                          <CheckOutlined />
-                        </Button>
-                        <Button
-                          danger
-                          onClick={() => handleDecline(friend.user_id1)}
-                        >
-                          <CloseOutlined />
-                        </Button>
-                      </div>
+                    {friend?.status !== "pending" && (
+                      <p
+                        className={`${
+                          friend.status === "you owe"
+                            ? "text-danger"
+                            : "text-success"
+                        } text-sm leading-normal line-clamp-1`}
+                      >
+                        {friend.status === "you owe"
+                          ? "Owes You"
+                          : "Settled Up"}
+                      </p>
                     )}
                   </div>
                 </div>
+
+                {/* Right-aligned buttons */}
+                {friend.status === "pending" && isRecipient && (
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      type="primary"
+                      onClick={() => handleAccept(friend.user_id1)}
+                    >
+                      <CheckOutlined />
+                    </Button>
+                    <Button
+                      danger
+                      onClick={() => handleDecline(friend.user_id1)}
+                    >
+                      <CloseOutlined />
+                    </Button>
+                  </div>
+                )}
+                {friend.status !== "pending" && (
+                  <p className="text-danger text-sm">$20</p>
+                )}
               </List.Item>
             );
           }}
@@ -195,15 +245,6 @@ const FriendsListPage = () => {
       {searchResults.length === 0 && searchEmail && (
         <p className="text-center text-white mt-4">No results found</p>
       )}
-
-      <div className="text-center mt-6">
-        <Button
-          onClick={() => setIsAddMoreFriendsModalOpen(true)}
-          type="primary"
-        >
-          Add more friends
-        </Button>
-      </div>
     </div>
   );
 };
