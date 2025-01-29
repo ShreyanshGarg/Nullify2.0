@@ -5,7 +5,7 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/api",
   }),
-  tagTypes: ["Friendship"],
+  tagTypes: ["Friendship", "Expense"],
   endpoints: (builder) => ({
     searchUserByEmail: builder.query({
       query: (email: string) => ({
@@ -50,6 +50,21 @@ export const authApi = createApi({
         method: "GET",
       }),
     }),
+    addExpense: builder.mutation({
+      query: (expenseData) => ({
+        url: `expense`,
+        method: "POST",
+        body: expenseData,
+      }),
+      invalidatesTags: ["Expense"],
+    }),
+    fetchExpenses: builder.query({
+      query: (friendshipId: string) => ({
+        url: `expense?friendship_id=${friendshipId}`,
+        method: "GET",
+      }),
+      providesTags: ["Expense"],
+    }),
   }),
 });
 
@@ -59,5 +74,7 @@ export const {
   useFetchFriendshipQuery, 
   useAcceptFriendshipMutation,
   useDeclineFriendshipMutation,
-  useFetchFriendByIdQuery
+  useFetchFriendByIdQuery,
+  useAddExpenseMutation,
+  useFetchExpensesQuery
 } = authApi;

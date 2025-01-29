@@ -1,21 +1,46 @@
 "use client";
-import { Avatar, Button, Tooltip } from "antd";
-import { ArrowLeftOutlined, CalendarOutlined } from "@ant-design/icons";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { Avatar, Button, Spin, Tooltip } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useFetchFriendByIdQuery, useFetchExpensesQuery } from "@/provider/redux/services/user";
 import AddExpenseModal from "./AddExpenseModal";
 import SettleUpModal from "../../components/SettleUpModal";
-import { useFetchFriendByIdQuery } from "@/provider/redux/services/user";
+
+interface Expense {
+  id: string;
+  name: string;
+  date: string;  // Date could be in string format
+  paid_by: string;  // The user who paid for the expense
+  total_amount: number;
+}
 
 const FriendsViewPage = ({ pathId }: { pathId: string }) => {
 
   const router = useRouter();
-  const [isAddExpenseModalOpen, setIsExpenseModalOpen] =
-    useState<boolean>(false);
-  const [isSettleUpModalOpen, setIsSettleUpModalOpen] =
-    useState<boolean>(false);
+  const [isAddExpenseModalOpen, setIsExpenseModalOpen] = useState<boolean>(false);
+  const [isSettleUpModalOpen, setIsSettleUpModalOpen] = useState<boolean>(false);
 
-    const { data: friend, isLoading, error } = useFetchFriendByIdQuery(pathId as string);
+  const [friendData, setFriendData] = useState<any | null>(null);
+
+  // Get user data from Auth0
+  const { user } = useUser();
+  const loggedInUserId = user?.sub?.split("|")[1] || null;
+
+  const { data: friend, isLoading: loadingFriend } = useFetchFriendByIdQuery(pathId);
+  const { data: expenses, isLoading: loadingExpenses, error: expensesError } = useFetchExpensesQuery(pathId); // Fetching expenses using the friendship ID
+
+  useEffect(() => {
+    if (friend && loggedInUserId) {
+      if (friend.user1?.user_id === loggedInUserId) {
+        setFriendData(friend.user2);
+      } else if (friend.user2?.user_id === loggedInUserId) {
+        setFriendData(friend.user1);
+      }
+    }
+  }, [friend, user]);
+
   const handleBackClick = () => {
     router.push("/friends");
   };
@@ -26,6 +51,9 @@ const FriendsViewPage = ({ pathId }: { pathId: string }) => {
         <AddExpenseModal
           isAddExpenseModalOpen={isAddExpenseModalOpen}
           setIsExpenseModalOpen={setIsExpenseModalOpen}
+          friendData={friendData}
+          loggedInUserId={loggedInUserId}
+          pathId={pathId}
         />
       )}
 
@@ -47,59 +75,47 @@ const FriendsViewPage = ({ pathId }: { pathId: string }) => {
           <div>
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col items-center">
-                <Tooltip title={friend?.email}>
-
-                <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
-                  {friend?.name}
-                </h1>
+                <Tooltip title={friendData?.email}>
+                  <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
+                    {friendData?.name}
+                  </h1>
                 </Tooltip>
                 <p className="text-gray text-base font-normal">$0.00</p>
               </div>
-              <Button
-                type="primary"
-                className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 !bg-[#283039] text-white text-sm font-bold leading-normal tracking-[0.015em] w-50 max-w-[480px]"
-              >
-                Pay
-              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-start">
-                <div className="text-gray text-sm">
-                  Dec <br />
-                  08
-                </div>
-              </div>
-              <div className="flex flex-col justify-center">
-                <p className="text-white text-md leading-normal line-clamp-1">
-                  Dinner
-                </p>
-                <p className="text-danger text-sm leading-normal line-clamp-1">
-                  You Owe
-                </p>
-              </div>
+
+          <div>
+            {loadingExpenses ? (
+              <div className="flex justify-center mt-10">
+              <Spin size="large" />
             </div>
-            <p className="text-danger text-sm">$20</p>
-          </div>
-          <div className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-start">
-                <div className="text-gray text-sm">
-                  Dec <br />
-                  08
+            ) : expenses?.expenses?.length === 0 ? (
+              <p className="text-gray text-base font-normal">$0.00</p>
+            ): (
+              expenses?.expenses?.map((expense: Expense) => (
+                <div key={expense.id} className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="flex flex-col items-start">
+                      <div className="text-gray text-sm">
+                        {new Date(expense.date).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-md leading-normal line-clamp-1">
+                        {expense.name}
+                      </p>
+                      <p className="text-danger text-sm leading-normal line-clamp-1">
+                        {expense.paid_by === loggedInUserId ? "You Paid" : "You Owe"}
+                      </p>
+                    </div>
+                  </div>
+                  <p className={`text-${expense.paid_by === loggedInUserId ? "success" : "danger"} text-sm`}>
+                    ${expense.total_amount}
+                  </p>
                 </div>
-              </div>
-              <div className="flex flex-col justify-center">
-                <p className="text-white text-md leading-normal line-clamp-1">
-                  Dinner
-                </p>
-                <p className="text-success text-sm leading-normal line-clamp-1">
-                  Owes You
-                </p>
-              </div>
-            </div>
-            <p className="text-success text-sm">$20</p>
+              ))
+            )}
           </div>
         </div>
         <div className="fixed bottom-20 left-0 w-full flex flex-col gap-3 p-4 bg-custom max-w-[480px] mx-auto">

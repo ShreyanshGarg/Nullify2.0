@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// add new friend and send a friend request
 export async function POST(req: Request) {
   try {
     const { user_id1, user_id2 } = await req.json();
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
   }
 }
 
+// get all friends of a user
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
@@ -82,12 +84,12 @@ export async function GET(req: Request) {
         user2: true,
       },
     });
-    console.log(friends);
 
     const friendList = friends.map((friend) => {
       const isUser1 = friend.user_id1 === userId;
 
       return {
+        friendship_id: friend?.friendship_id,
         user_id2: friend?.user_id2,
         user_id1: friend?.user_id1,
         name: isUser1 ? friend.user2.name : friend.user1.name,

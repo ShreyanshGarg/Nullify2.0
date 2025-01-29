@@ -7,7 +7,6 @@ import {
   Avatar,
   Input,
   Space,
-  Modal,
   Tooltip,
   Spin,
 } from "antd";
@@ -27,7 +26,6 @@ import {
   useDeclineFriendshipMutation,
 } from "@/provider/redux/services/user";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { notification } from "antd";
 import { getRandomColor } from "@/app/lib/constants";
 
 const { Title } = Typography;
@@ -38,7 +36,7 @@ interface User {
   email: string;
   name: string;
   status?: string;
-  avatarColor?: string;
+  friendship_id?: string;
 }
 
 const FriendsListPage = () => {
@@ -59,11 +57,11 @@ const FriendsListPage = () => {
     isFetching,
     // isLoading
   } = useFetchFriendshipQuery(userId || "", { skip: !userId });
-  // console.log(isFetching);
   const [acceptFriendship] = useAcceptFriendshipMutation();
   const [declineFriendship] = useDeclineFriendshipMutation();
 
   useEffect(() => {
+    console.log(friends);
     if (!user) {
       router.push("/auth");
       return;
@@ -128,6 +126,8 @@ const FriendsListPage = () => {
     router.push(`/friends/${id}`);
   };
 
+  console.log(friends);
+
   return (
     <div className="bg-custom p-4 pt-0 flex-1">
       {isAddMoreFriendsModalOpen && (
@@ -171,13 +171,13 @@ const FriendsListPage = () => {
           renderItem={(friend: User) => {
             const loggedInUserId = user?.sub?.split("|")[1];
             const isRecipient = friend.user_id2 === loggedInUserId;
-            const randomColor = getRandomColor(); //random color for friend's avatar
+            const randomColor = getRandomColor();
 
             return (
               <List.Item
                 onClick={() =>
                   friend?.status !== "pending" &&
-                  handleFriendClick(friend.user_id2)
+                  handleFriendClick(friend?.friendship_id || '')
                 }
                 className="cursor-pointer flex justify-between items-center"
               >

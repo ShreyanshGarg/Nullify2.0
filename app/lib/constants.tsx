@@ -1,4 +1,4 @@
-const Friends_split_options = [
+const friends_split_options = [
   { value: "split_equally", label: "You paid, split equally" },
   { value: "owed_full", label: "You are owed the full amount" },
   { value: "xyz_split_equally", label: "XYZ paid, split equally" },
@@ -15,4 +15,4 @@ export const getRandomColor = () => {
 };
 
 
-export default Friends_split_options;
+export default friends_split_options;
