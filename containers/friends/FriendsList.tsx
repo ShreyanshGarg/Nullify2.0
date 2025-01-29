@@ -29,17 +29,9 @@ import {
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { notification } from "antd";
 import { getRandomColor } from "@/app/lib/constants";
+import { User } from "@/type";
 
 const { Title } = Typography;
-
-interface User {
-  user_id1: string;
-  user_id2: string;
-  email: string;
-  name: string;
-  status?: string;
-  avatarColor?: string;
-}
 
 const FriendsListPage = () => {
   const { user, isLoading } = useUser();
@@ -59,7 +51,6 @@ const FriendsListPage = () => {
     isFetching,
     // isLoading
   } = useFetchFriendshipQuery(userId || "", { skip: !userId });
-  // console.log(isFetching);
   const [acceptFriendship] = useAcceptFriendshipMutation();
   const [declineFriendship] = useDeclineFriendshipMutation();
 

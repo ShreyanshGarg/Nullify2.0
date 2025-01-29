@@ -56,15 +56,14 @@ const AccountPage = () => {
   //   if (!prompt) return;
   //   (prompt as BeforeInstallPromptEvent)?.prompt();
   // };
-  const {user, error, isLoading} = useUser();
-  console.log(user);
+  const { user, error, isLoading } = useUser();
 
-  useEffect(()=>{
-    if(!user){
+  useEffect(() => {
+    if (!user) {
       // return <a href="/api/auth/logout">logout</a>
-      return router.push('/auth');
+      return router.push("/auth");
     }
-  },[])
+  }, []);
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1 text-white">
@@ -84,7 +83,9 @@ const AccountPage = () => {
           </Avatar>
           <div className="ml-4">
             <div className="p-4">
-              <p className="text-white text-xl leading-normal">{user?.nickname}</p>
+              <p className="text-white text-xl leading-normal">
+                {user?.nickname}
+              </p>
               <p className="text-gray text-sm leading-normal break-words">
                 {user?.email}
               </p>
@@ -113,7 +114,9 @@ const AccountPage = () => {
           <Button
             type="primary"
             className="w-full"
-            onClick={() => router.push('/api/auth/logout')}
+            onClick={() => {
+              window.location.href = "/api/auth/logout";
+            }}
           >
             Log Out
           </Button>

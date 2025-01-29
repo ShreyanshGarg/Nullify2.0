@@ -1,7 +1,48 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/client";
+// const prisma = new PrismaClient();
 
-const prisma = new PrismaClient();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  }
+
+  try {
+    const friends = await prisma.friends.findMany({
+      where: {
+        OR: [{ user_id1: userId }, { user_id2: userId }],
+      },
+      include: {
+        user1: true,
+        user2: true,
+      },
+    });
+
+    const friendList = friends.map((friend) => {
+      const isUser1 = friend.user_id1 === userId;
+
+      return {
+        user_id2: friend?.user_id2,
+        user_id1: friend?.user_id1,
+        name: isUser1 ? friend.user2.name : friend.user1.name,
+        email: isUser1 ? friend.user2.email : friend.user1.email,
+        status: friend.status,
+      };
+    });
+    console.log(friendList);
+
+    return NextResponse.json(friendList, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching friends:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch friends" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -61,47 +102,5 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-  }
-}
-
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
-
-  if (!userId) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-  }
-
-  try {
-    const friends = await prisma.friends.findMany({
-      where: {
-        OR: [{ user_id1: userId }, { user_id2: userId }],
-      },
-      include: {
-        user1: true,
-        user2: true,
-      },
-    });
-    console.log(friends);
-
-    const friendList = friends.map((friend) => {
-      const isUser1 = friend.user_id1 === userId;
-
-      return {
-        user_id2: friend?.user_id2,
-        user_id1: friend?.user_id1,
-        name: isUser1 ? friend.user2.name : friend.user1.name,
-        email: isUser1 ? friend.user2.email : friend.user1.email,
-        status: friend.status,
-      };
-    });
-
-    return NextResponse.json(friendList, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching friends:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch friends" },
-      { status: 500 }
-    );
   }
 }
