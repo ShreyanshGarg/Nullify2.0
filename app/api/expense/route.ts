@@ -3,9 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-
-// create new expense for friends
-// create new expense for friends
+// add new expense for friends
 export async function POST(req: Request) {
   try {
     const {
@@ -18,7 +16,6 @@ export async function POST(req: Request) {
       date,
     } = await req.json();
 
-    // Validate required fields
     if (!name || !total_amount || !split_type || !paid_by || !friendship_id) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -26,9 +23,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fetch friendship details to validate friendship_id
     const friendship = await prisma.friends.findUnique({
-      where: { friendship_id: parseInt(friendship_id, 10) }, // Ensure this is an integer
+      where: { friendship_id: parseInt(friendship_id, 10) }, 
       select: { user_id1: true, user_id2: true },
     });
 
@@ -45,7 +41,6 @@ export async function POST(req: Request) {
 
     let final_split_details = {};
 
-    // Handle different split types
     switch (split_type) {
       case "split_equally":
       case "xyz_split_equally":
@@ -65,7 +60,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Invalid split type" }, { status: 400 });
     }
 
-    // Create the expense
     const newExpense = await prisma.expenses.create({
       data: {
         name,
@@ -74,7 +68,7 @@ export async function POST(req: Request) {
         paid_by,
         split_details: final_split_details,
         friendship_id,
-        date: new Date(date), // Convert date to a valid Date object
+        date: new Date(date), 
         is_settled: false,
       },
     });
@@ -96,12 +90,11 @@ export async function POST(req: Request) {
 }
 
 
-
-// fetch all expenses of a friendship id
+// get all expenses by friendship id
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const friendship_id = url.searchParams.get("friendship_id"); // Extract from query parameters
+    const friendship_id = url.searchParams.get("friendship_id"); 
 
     if (!friendship_id || isNaN(Number(friendship_id))) {
       return NextResponse.json(
@@ -110,7 +103,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // Fetch all expenses by friendship_id
     const expenses = await prisma.expenses.findMany({
       where: { friendship_id: Number(friendship_id) },
     });
