@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, Image } from "antd";
-import { signIn, useSession } from "next-auth/react";
+import { Button } from "antd";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
@@ -45,11 +45,6 @@ const AuthPage = () => {
       window.removeEventListener("beforeinstallprompt", handlePrompt);
   }, []);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/friends");
-    }
-  }, [status, router]);
 
   return (
     <>

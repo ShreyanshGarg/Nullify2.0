@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 model Users {
@@ -51,6 +51,7 @@ model Groups {
   created_at     DateTime             @default(now())
   updated_at     DateTime             @updatedAt
   deleted_at     DateTime?
+  simplify_debt  Boolean
   expenses       Expenses[]
   groupBalances  FriendGroupBalance[]
   users          Users[]              @relation("UserGroups")

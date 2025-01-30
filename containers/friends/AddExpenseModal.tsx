@@ -27,7 +27,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   loggedInUserId,
   pathId
 }) => {
-  console.log(pathId);
+ // console.log(pathId);
   const [expense, setExpense] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedSplitOption, setSelectedSplitOption] =
@@ -77,11 +77,11 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
       friendship_id: parseInt(pathId, 10),
     };
 
-    console.log("Final Expense Data:", expenseData);
+   // console.log("Final Expense Data:", expenseData);
 
     try {
       const response = await addExpense(expenseData).unwrap();
-      console.log("Expense saved:", response);
+     // console.log("Expense saved:", response);
       setIsExpenseModalOpen(false);
     } catch (error) {
       console.error("Error saving expense:", error);

@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     try {
       const { user_id1, user_id2 } = await req.json();
   
-      console.log("Input data:", { user_id1, user_id2 });
+     // console.log("Input data:", { user_id1, user_id2 });
   
       if (!user_id1 || !user_id2) {
         return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         },
       });
   
-      console.log("Update result:", updatedFriendship);
+     // console.log("Update result:", updatedFriendship);
   
       if (updatedFriendship.count === 0) {
         return NextResponse.json(

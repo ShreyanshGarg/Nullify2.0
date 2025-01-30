@@ -32,7 +32,6 @@ export async function GET() {
         "Content-Type": "application/json",
       },
     });
-    console.log(usersResponse)
     if (!usersResponse.ok) {
       const error = await usersResponse.json();
       console.error("Error fetching users from Auth0:", error);
@@ -72,7 +71,7 @@ export async function GET() {
         }
       })
     );
-    console.log(createdOrUpdatedUsers)
+   // console.log(createdOrUpdatedUsers)
 
     return NextResponse.json({ users: createdOrUpdatedUsers }, { status: 200 });
   } catch (error: unknown) {

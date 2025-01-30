@@ -30,7 +30,7 @@ export async function GET(req: Request) {
       },
     });
 
-    console.log(users);
+  //  console.log(users);
 
     if (users.length === 0) {
       return NextResponse.json({ message: "No users found" }, { status: 404 });

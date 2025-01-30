@@ -25,14 +25,6 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   // Create form instance using Form.useForm
   const [form] = Form.useForm();
 
-  const handleConfirm = () => {
-    // Add logic for confirming expense
-    console.log("Expense:", expense);
-    console.log("Amount:", amount);
-    console.log("Split Option:", selectedSplitOption);
-    setIsExpenseModalOpen(false);
-  };
-
   const updatePaidBy = (name: string, id: string) => {
     setPaidBy(name);
     setPaidById(id);

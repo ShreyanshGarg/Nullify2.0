@@ -27,17 +27,9 @@ import {
 } from "@/provider/redux/services/user";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { getRandomColor } from "@/app/lib/constants";
+import { User } from "@/type";
 
 const { Title } = Typography;
-
-interface User {
-  user_id1: string;
-  user_id2: string;
-  email: string;
-  name: string;
-  status?: string;
-  friendship_id?: string;
-}
 
 const FriendsListPage = () => {
   const { user, isLoading } = useUser();
@@ -61,7 +53,7 @@ const FriendsListPage = () => {
   const [declineFriendship] = useDeclineFriendshipMutation();
 
   useEffect(() => {
-    console.log(friends);
+   // console.log(friends);
     if (!user) {
       router.push("/auth");
       return;
@@ -126,7 +118,7 @@ const FriendsListPage = () => {
     router.push(`/friends/${id}`);
   };
 
-  console.log(friends);
+ // console.log(friends);
 
   return (
     <div className="bg-custom p-4 pt-0 flex-1">

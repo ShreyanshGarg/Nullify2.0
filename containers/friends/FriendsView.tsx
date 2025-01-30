@@ -7,14 +7,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { useFetchFriendByIdQuery, useFetchExpensesQuery } from "@/provider/redux/services/user";
 import AddExpenseModal from "./AddExpenseModal";
 import SettleUpModal from "../../components/SettleUpModal";
-
-interface Expense {
-  id: string;
-  name: string;
-  date: string;  // Date could be in string format
-  paid_by: string;  // The user who paid for the expense
-  total_amount: number;
-}
+import { Expense } from "@/type";
 
 const FriendsViewPage = ({ pathId }: { pathId: string }) => {
 
@@ -29,8 +22,7 @@ const FriendsViewPage = ({ pathId }: { pathId: string }) => {
   const loggedInUserId = user?.sub?.split("|")[1] || null;
 
   const { data: friend, isLoading: loadingFriend } = useFetchFriendByIdQuery(pathId);
-  const { data: expenses, isLoading: loadingExpenses, error: expensesError } = useFetchExpensesQuery(pathId); // Fetching expenses using the friendship ID
-
+  const { data: expenses, isLoading: loadingExpenses, error: expensesError } = useFetchExpensesQuery(pathId); 
   useEffect(() => {
     if (friend && loggedInUserId) {
       if (friend.user1?.user_id === loggedInUserId) {
@@ -80,7 +72,7 @@ const FriendsViewPage = ({ pathId }: { pathId: string }) => {
                     {friendData?.name}
                   </h1>
                 </Tooltip>
-                <p className="text-gray text-base font-normal">$0.00</p>
+                {/* <p className="text-gray text-base font-normal">$0.00</p> */}
               </div>
             </div>
           </div>
@@ -105,14 +97,23 @@ const FriendsViewPage = ({ pathId }: { pathId: string }) => {
                       <p className="text-white text-md leading-normal line-clamp-1">
                         {expense.name}
                       </p>
-                      <p className="text-danger text-sm leading-normal line-clamp-1">
+                      <p className={`text-${expense.paid_by === loggedInUserId ? "success" : "danger"} text-sm leading-normal line-clamp-1`}>
                         {expense.paid_by === loggedInUserId ? "You Paid" : "You Owe"}
                       </p>
                     </div>
                   </div>
                   <p className={`text-${expense.paid_by === loggedInUserId ? "success" : "danger"} text-sm`}>
-                    ${expense.total_amount}
+                    {expense.paid_by === loggedInUserId
+                      ? `$${loggedInUserId && expense.split_details?.[friendData?.user_id]?.amount 
+                          ? expense.split_details[friendData.user_id].amount 
+                          : 0}`
+                      : `$${loggedInUserId && expense.split_details?.[loggedInUserId]?.amount 
+                          ? expense.split_details[loggedInUserId].amount 
+                          : 0}`}
                   </p>
+
+
+
                 </div>
               ))
             )}

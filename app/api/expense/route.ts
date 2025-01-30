@@ -39,19 +39,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const otherUserId =
-      friendship.user_id1 === paid_by ? friendship.user_id2 : friendship.user_id1;
+    const user1 = friendship.user_id1;
+    const user2 = friendship.user_id2;
+    const otherUserId = paid_by === user1 ? user2 : user1;
 
-    // Validate split_details
-    if (
-      split_details &&
-      typeof split_details !== "object" &&
-      (!split_details[otherUserId] || split_details[otherUserId].amount <= 0)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid split details" },
-        { status: 400 }
-      );
+    let final_split_details = {};
+
+    // Handle different split types
+    switch (split_type) {
+      case "split_equally":
+      case "xyz_split_equally":
+        final_split_details = {
+          [otherUserId]: { amount: Number((total_amount / 2).toFixed(2)), is_settled: false },
+        };
+        break;
+
+      case "owed_full":
+      case "xyz_owed_full":
+        final_split_details = {
+          [otherUserId]: { amount: Number(total_amount), is_settled: false },
+        };
+        break;
+
+      default:
+        return NextResponse.json({ error: "Invalid split type" }, { status: 400 });
     }
 
     // Create the expense
@@ -61,14 +72,9 @@ export async function POST(req: Request) {
         total_amount,
         split_type,
         paid_by,
-        split_details: split_details || {
-          [otherUserId]: {
-            amount: Number((total_amount / 2).toFixed(2)),
-            is_settled: false,
-          },
-        },
+        split_details: final_split_details,
         friendship_id,
-        date: new Date(date), // Convert the date to a valid Date object
+        date: new Date(date), // Convert date to a valid Date object
         is_settled: false,
       },
     });
@@ -88,6 +94,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
 
 // fetch all expenses of a friendship id
