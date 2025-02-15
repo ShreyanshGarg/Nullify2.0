@@ -2,47 +2,63 @@ import { Avatar, Button, List, Modal } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import PaidAmountsModal from "./PaidAmountsModal";
+import { useFetchSingleGroupQuery } from "@/provider/redux/services/group";
+import { useParams } from "next/navigation";
 
 interface WhoPaidModalProps {
   isWhoPaidModalOpen: boolean;
   setIsWhoPaidModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updatePaidBy: (name: string, id: string) => void;
-  paidById: string;
+  updatePaidBy: (data: any) => void;
+  paidBy: {
+    [key: string]: {
+      amount: string;
+      name: string;
+    };
+  };
+  amount: string;
 }
 
 const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
   isWhoPaidModalOpen,
   setIsWhoPaidModalOpen,
   updatePaidBy,
-  paidById,
+  paidBy,
+  amount,
 }) => {
-  const friends = [
+  const params = useParams();
+  const group_id = params.id;
+  const { data: group, isLoading } = useFetchSingleGroupQuery(
+    parseInt(group_id),
     {
-      id: "234",
-      name: "Kanika",
-      status: "you owe",
-      amount: "$250.00",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "235",
-      name: "Shreyansh Garg",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#0066cc",
-    },
-  ];
-
+      skip: !group_id,
+    }
+  );
+  const memberDetailsArray = Object.entries(group?.member_details || {}).map(
+    ([id, details]) => ({
+      id,
+      name: details.name,
+      amount: details.amount,
+    })
+  );
   const [paidAmountsModal, setPaidAmountsModal] = useState(false);
 
-  const handleSelectFriend = (id: string, name: string) => {
-    updatePaidBy(name, id);
+  const handleSingleSelectFriend = (id: string, name: string) => {
+    const data = {
+      [id]: {
+        amount: amount,
+        name: name || "",
+      },
+    };
+    updatePaidBy(data);
     setIsWhoPaidModalOpen(false);
   };
 
-  useEffect(() => {
-    console.log("Selected Friend ID:", paidById);
-  }, [paidById]);
+  const handleMultipleSelectFriend = (paidAmounts: any) => {
+    console.log(paidAmounts);
+    updatePaidBy(paidAmounts);
+    setPaidAmountsModal(false);
+    setIsWhoPaidModalOpen(false);
+  };
 
   return (
     <div>
@@ -50,6 +66,9 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
         <PaidAmountsModal
           isPaidAmountsModalOpen={paidAmountsModal}
           setIsPaidAmountsModalOpen={setPaidAmountsModal}
+          memberDetailsArray={memberDetailsArray}
+          amount={amount}
+          handleMultipleSelectFriend={handleMultipleSelectFriend}
         />
       )}
       <Modal
@@ -84,16 +103,16 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
         <div className="space-y-4 pl-4 pr-6 pt-0">
           <List
             itemLayout="horizontal"
-            dataSource={friends}
+            dataSource={memberDetailsArray}
             renderItem={(friend) => (
               <List.Item
-                onClick={() => handleSelectFriend(friend.id, friend.name)}
+                onClick={() => handleSingleSelectFriend(friend.id, friend.name)}
                 className="cursor-pointer flex justify-between items-center"
               >
                 <div className="flex items-center gap-4">
                   <Avatar
                     style={{
-                      backgroundColor: friend.avatarColor,
+                      // backgroundColor: friend.avatarColor,
                       verticalAlign: "middle",
                     }}
                   >
@@ -108,8 +127,13 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
 
                 {/* Tick icon for selected user */}
                 <div className="flex flex-col items-end text-right">
-                  {paidById === friend.id && (
-                    <CheckOutlined className="text-green-500 text-lg" />
+                  {Object.keys(paidBy).map((paidById) =>
+                    paidById == friend.id ? (
+                      <CheckOutlined
+                        key={paidById}
+                        className="text-green-500 text-lg"
+                      />
+                    ) : null
                   )}
                 </div>
               </List.Item>

@@ -16,7 +16,6 @@ model Users {
   uuid         String?    @unique
   deleted_at   DateTime?
   email_verified  Boolean    @default(false)
-  expenses     Expenses[]
   friends1     Friends[]  @relation("Friend1")
   friends2     Friends[]  @relation("Friend2")
   groups       Groups[]   @relation("UserGroups")
@@ -65,7 +64,7 @@ model Expenses {
   date          DateTime
   total_amount  Decimal
   split_type    String
-  paid_by       String    // Change to String to match user_id in Users
+  paid_by       Json    // Change to String to match user_id in Users
   split_details Json
   group_id      Int?
   is_settled    Boolean
@@ -75,9 +74,7 @@ model Expenses {
   deleted_at    DateTime?
   friend        Friends?  @relation(fields: [friendship_id], references: [friendship_id])
   group         Groups?   @relation(fields: [group_id], references: [group_id])
-  payer         Users     @relation(fields: [paid_by], references: [user_id])  // Relation updated
 
-  @@index([paid_by])
   @@index([group_id])
 }
 

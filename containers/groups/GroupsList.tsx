@@ -31,6 +31,7 @@ const GroupsListPage = () => {
     isFetching,
     // isLoading
   } = useFetchGroupQuery(userId || "", { skip: !userId });
+  console.log(groups)
   const { Search } = Input;
 
   const handleGroupClick = (id: string) => {

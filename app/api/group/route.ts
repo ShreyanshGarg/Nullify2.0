@@ -32,6 +32,7 @@ import { GroupMemberDetails } from "@/type";
 //   }
 // }
 
+// Api for creating group
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -42,6 +43,7 @@ export async function POST(req: Request) {
     selected_friends.map((friendInfo: { id: string }) => {
       memberDetails[friendInfo.id] = {
         amount: 0,
+        name: friendInfo.name,
       };
     });
     if (!group_name || !selected_friends || !simplify_debt) {

@@ -37,18 +37,19 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   setIsAddGroupMembersOpen,
   selectedFriends,
 }) => {
-  console.log(selectedFriends);
   const { user, isLoading } = useUser();
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const [form] = Form.useForm();
   const [createGroup, { isError: isErrorCreatingCompany }] =
     useCreateGroupMutation();
-
   const onFinish = async (values: any) => {
     const formData = {
       ...values,
-      selected_friends: [...selectedFriends, { id: user?.sub?.split("|")[1] }],
+      selected_friends: [
+        ...selectedFriends,
+        { id: user?.sub?.split("|")[1], name: user?.nickname },
+      ],
     };
     try {
       setIsFormSubmitting(true);
@@ -78,12 +79,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
 
   return (
     <div>
-      {adjustSplitModal && (
+      {/* {adjustSplitModal && (
         <AdjustSplitModal
           isAdjustSplitModalOpen={adjustSplitModal}
           setIsAdjustSplitModalOpen={setAdjustSplitModal}
         />
-      )}
+      )} */}
       <Modal
         title={
           <div className="bg-[#111418] p-4 pb-0 flex items-center justify-between">

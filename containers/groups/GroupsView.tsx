@@ -4,13 +4,25 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import SelectBalanceModal from "./SelectBalanceModal";
+import { useParams } from "next/navigation";
+import { useFetchSingleGroupQuery } from "@/provider/redux/services/group";
 
 const GroupsViewPage = () => {
   const router = useRouter();
+  const params = useParams();
+  const group_id = params.id;
   const [isAddExpenseModalOpen, setIsExpenseModalOpen] =
     useState<boolean>(false);
   const [isSelectBalanceModalOpen, setIsSelectBalanceModalOpen] =
     useState<boolean>(false);
+  console.log(group_id);
+  const { data: group, isLoading } = useFetchSingleGroupQuery(
+    parseInt(group_id),
+    {
+      skip: !group_id,
+    }
+  );
+  console.log(group);
 
   const handleBackClick = () => {
     router.push("/groups");
@@ -22,6 +34,7 @@ const GroupsViewPage = () => {
         <AddExpenseModal
           isAddExpenseModalOpen={isAddExpenseModalOpen}
           setIsExpenseModalOpen={setIsExpenseModalOpen}
+          group={group}
         />
       )}
 
@@ -44,7 +57,7 @@ const GroupsViewPage = () => {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col items-center">
                 <h1 className="text-[22px] font-bold leading-tight tracking-[-0.015em] text-[#B57EDC]">
-                  Split Group
+                  {group?.name}
                 </h1>
                 <p className="text-gray text-base font-normal">$0.00</p>
               </div>

@@ -60,7 +60,6 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
   }, []);
 
   const onSearch = (value: string) => console.log(value);
-
   return (
     <div>
       {showCreateGroupModal && (

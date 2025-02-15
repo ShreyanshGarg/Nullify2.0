@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/client";
 
+// api for getting all groups particular to user
 export async function GET(
   req: Request,
   { params }: { params: { user_id: string } }
 ) {
   const { user_id } = params;
-
+  console.log("user_id", user_id);
   if (!user_id) {
     return NextResponse.json({ error: "User ID is required" }, { status: 400 });
   }
