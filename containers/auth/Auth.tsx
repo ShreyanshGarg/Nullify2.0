@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, Image } from "antd";
-import { signIn, useSession } from "next-auth/react";
+import { Button } from "antd";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GoogleOutlined } from "@ant-design/icons";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: Array<string>;
@@ -17,10 +18,17 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const AuthPage = () => {
-  const [prompt, setPrompt] = useState<Event | null>(null);
-  const { data: session, status } = useSession();
-  console.log(status);
+  const {user, error, isLoading} = useUser();
+  console.log(user);
   const router = useRouter();
+
+  if(user){
+    // return <a href="/api/auth/logout">logout</a>
+    return router.push('/friends');
+  }
+  const [prompt, setPrompt] = useState<Event | null>(null);
+  // const { data: session, status } = useSession();
+  // console.log(status);
 
   const installApp = () => {
     if (!prompt) return;
@@ -37,15 +45,10 @@ const AuthPage = () => {
       window.removeEventListener("beforeinstallprompt", handlePrompt);
   }, []);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/friends");
-    }
-  }, [status, router]);
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center min-h-screen bg-custom">
+      <div className="flex flex-col justify-center items-center min-h-screen bg-custom mx-6">
         {/* <div>
           <Image
             src="/image.jpeg"
@@ -59,6 +62,15 @@ const AuthPage = () => {
         {/* <Button type="primary" onClick={installApp}>
           Download the App
         </Button> */}
+          <div>
+            <Button
+          size="large"
+          className="mt-4 !bg-[#B57EDC] !border-[#283039] w-full"
+          onClick={() => router.push('/api/auth/login')}
+        >
+          Login with Auth0
+        </Button>
+          </div>
         {status === "unauthenticated" && (
           <div className="mt-[10rem]">
           <Button
@@ -81,7 +93,7 @@ const AuthPage = () => {
             onClick={() => signIn("google")}
           >
             <GoogleOutlined />
-            Sign in with Google
+            Continue with Google
           </Button> 
           </div>
          

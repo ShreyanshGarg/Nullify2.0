@@ -1,36 +1,78 @@
 import { Avatar, Button, Input, List, Modal } from "antd";
-import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import AdjustSplitModal from "./AdjustSplitModal";
 
 interface PaidAmountsModalProps {
   isPaidAmountsModalOpen: boolean;
   setIsPaidAmountsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  memberDetailsArray: Array<{
+    id: string;
+    name: string;
+  }>;
+  amount: string;
+  handleMultipleSelectFriend: (data: any) => void;
+  paidBy: any;
+  setPaidBy: React.Dispatch<React.SetStateAction<any>>;
+}
+
+interface PaidAmounts {
+  [key: string]: {
+    amount: string;
+    name: string;
+  };
 }
 
 const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
   isPaidAmountsModalOpen,
   setIsPaidAmountsModalOpen,
+  memberDetailsArray,
+  amount,
+  handleMultipleSelectFriend,
+  paidBy,
+  setPaidBy
 }) => {
-  const friends = [
-    {
-      id: "234",
-      name: "Kanika",
-      status: "you owe",
-      amount: "$250.00",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "235",
-      name: "Shreyansh Garg",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#0066cc",
-    },
-  ];
-
+  console.log(paidBy);
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
+  const [paidAmounts, setPaidAmounts] = useState<PaidAmounts>({});
 
+  // Initialize paid amounts with empty values
+  useEffect(() => {
+    const initialPaidAmounts: PaidAmounts = {};
+    memberDetailsArray.forEach((member) => {
+      initialPaidAmounts[member.id] = {
+        amount: paidBy[member.id]?.amount || "", // Ensure it syncs with `paidBy`
+        name: member.name,
+      };
+    });
+    setPaidAmounts(initialPaidAmounts);
+  }, [memberDetailsArray]);
+
+  const handleAmountChange = (id: string, value: string, name: string) => {
+    setPaidBy((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], amount: value, name }
+    }));
+    setPaidAmounts((prev) => ({
+      ...prev,
+      [id]: { amount: value, name }
+    }));
+  };
+
+  const handleConfirm = () => {
+    // Pass the formatted data to the parent component
+    handleMultipleSelectFriend(paidAmounts);
+    setIsPaidAmountsModalOpen(false);
+  };
+
+  // Calculate totals for display
+  const totalPaid = Object.values(paidAmounts).reduce(
+    (sum, item) => sum + (parseFloat(item.amount) || 0),
+    0
+  );
+  const totalAmount = parseFloat(amount) || 0;
+  const remaining = totalAmount - totalPaid;
+console.log(paidAmounts);
   return (
     <div>
       {adjustSplitModal && (
@@ -71,7 +113,7 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
         <div className="space-y-4 pl-4 pr-6 pt-0">
           <List
             itemLayout="horizontal"
-            dataSource={friends}
+            dataSource={memberDetailsArray}
             renderItem={(friend) => (
               <List.Item className="cursor-pointer flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -90,8 +132,18 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
                   </div>
                 </div>
                 <Input
-                  placeholder="₹ 0.00"
+                  placeholder="₹ 0"
                   type="number"
+                  value={paidBy[friend.id]?.amount ?? ''}
+                  onChange={(e) => {
+                        handleAmountChange(friend.id, e.target.value, friend.name);
+                      }
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === ".") {
+                      e.preventDefault();
+                    }
+                  }}
                   className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:ring-0"
                 />
               </List.Item>
@@ -102,16 +154,25 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
             style={{ maxWidth: "480px", margin: "0 auto" }}
           >
             <div className="text-center m-4">
-              <p className="text-white text-md leading-normal">
-                ₹0.00 of ₹0.00
+              <p
+                className={` text-md leading-normal ${
+                  totalPaid > parseFloat(totalAmount.toFixed(2))
+                    ? "!text-red-500"
+                    : totalPaid === parseFloat(totalAmount.toFixed(2))
+                    ? "!text-green-500"
+                    : ""
+                }`}
+              >
+                ₹{totalPaid.toFixed(2)} of ₹{totalAmount.toFixed(2)}
               </p>
               <p className="text-gray text-sm leading-normal break-words">
-                ₹0.00 left.
+                ₹{remaining.toFixed(2)} left
               </p>
             </div>
             <Button
               className="!bg-[#B57EDC] !border-[#283039] w-full"
-              onClick={() => console.log("Add Expense clicked")}
+              onClick={handleConfirm}
+              disabled={totalPaid === parseFloat(totalAmount.toFixed(2)) ? false : true}
             >
               Confirm
             </Button>

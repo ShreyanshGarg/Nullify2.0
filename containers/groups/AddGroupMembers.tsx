@@ -1,19 +1,23 @@
 import React, { useState, useCallback } from "react";
-import { Avatar, Button, List, Modal, Space, Input } from "antd";
-import { CloseOutlined, CheckOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import { Avatar, Button, List, Modal, Space, Input, Spin } from "antd";
+import {
+  CloseOutlined,
+  CheckOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons";
 import CreateGroupModal from "./CreateGroupModal";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useFetchFriendshipQuery } from "@/provider/redux/services/user";
+import { User, Friend } from "@/type";
 
 interface AddGroupMembersProps {
   isAddGroupMembersOpen: boolean;
   setIsAddGroupMembersOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface Friend {
+interface SelectedFriendsProps {
   id: string;
   name: string;
-  status?: string;
-  amount?: string;
-  avatarColor: string;
 }
 
 const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
@@ -21,62 +25,41 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
   setIsAddGroupMembersOpen,
 }) => {
   const { Search } = Input;
+  const { user, isLoading } = useUser();
+  const userId = user?.sub?.split("|")[1];
 
-  const friends: Friend[] = [
-    {
-      id: "234",
-      name: "Kanika",
-      status: "you owe",
-      amount: "$250.00",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "235",
-      name: "Shreyansh Garg",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#0066cc",
-    },
-    {
-      id: "236",
-      name: "Anjali",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "236",
-      name: "Anjali",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#a6a6a6",
-    },
-  ];
-
-  const [selectedFriends, setSelectedFriends] = useState<Friend[]>([]);
+  const {
+    data: friends = [],
+    refetch,
+    isFetching,
+  } = useFetchFriendshipQuery(userId || "", { skip: !userId });
+  const [selectedFriends, setSelectedFriends] = useState<
+    SelectedFriendsProps[]
+  >([]);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
 
-  const handleSelectFriend = useCallback(
-    (friend: Friend) => {
-      setSelectedFriends((prevSelected) => {
-        const isAlreadySelected = prevSelected.some(
-          (selected) => selected.id === friend.id
-        );
-        if (isAlreadySelected) {
-          return prevSelected.filter((selected) => selected.id !== friend.id);
-        } else {
-          return [
-            ...prevSelected,
-            { id: friend.id, name: friend.name, avatarColor: friend.avatarColor },
-          ];
-        }
-      });
-    },
-    []
-  );
+  const handleSelectFriend = useCallback((friend: Friend) => {
+    const friendId =
+      friend.user_id1 !== userId ? friend.user_id1 : friend.user_id2;
+    setSelectedFriends((prevSelected: SelectedFriendsProps[]) => {
+      const isAlreadySelected = prevSelected.some(
+        (selected) => selected.id === friendId
+      );
+      if (isAlreadySelected) {
+        return prevSelected.filter((selected) => selected.id !== friendId);
+      } else {
+        return [
+          ...prevSelected,
+          {
+            id: friendId,
+            name: friend.name,
+          },
+        ];
+      }
+    });
+  }, []);
 
   const onSearch = (value: string) => console.log(value);
-
   return (
     <div>
       {showCreateGroupModal && (
@@ -126,36 +109,46 @@ const AddGroupMembers: React.FC<AddGroupMembersProps> = ({
               />
             </Space>
           </div>
-          <List
-            itemLayout="horizontal"
-            dataSource={friends}
-            renderItem={(friend) => (
-              <List.Item
-                onClick={() => handleSelectFriend(friend)}
-                className="cursor-pointer flex justify-between items-center"
-              >
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    style={{
-                      backgroundColor: friend.avatarColor,
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    {friend.name[0]}
-                  </Avatar>
-                  <div>
-                    <p className="text-white text-[15px] leading-normal line-clamp-1">
-                      {friend.name}
-                    </p>
+          {isFetching || isLoading ? (
+            <div className="flex justify-center mt-10">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <List
+              itemLayout="horizontal"
+              dataSource={friends.filter(
+                (friend: Friend) => friend.status !== "declined"
+              )}
+              renderItem={(friend: Friend) => (
+                <List.Item
+                  onClick={() => handleSelectFriend(friend)}
+                  className="cursor-pointer flex justify-between items-center"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      style={{
+                        backgroundColor: friend.avatarColor,
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {friend.name[0]}
+                    </Avatar>
+                    <div>
+                      <p className="text-white text-[15px] leading-normal line-clamp-1">
+                        {friend.name}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                {selectedFriends.some(
-                  (selected) => selected.id === friend.id
-                ) && <CheckOutlined className="text-green-500 text-lg" />}
-              </List.Item>
-            )}
-          />
+                  {selectedFriends.some(
+                    (selected) =>
+                      selected.id === friend.user_id1 ||
+                      selected.id === friend.user_id2
+                  ) && <CheckOutlined className="text-green-500 text-lg" />}
+                </List.Item>
+              )}
+            />
+          )}
         </div>
         <div className="p-6 flex justify-end">
           <Button
