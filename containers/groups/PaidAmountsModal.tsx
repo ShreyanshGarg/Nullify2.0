@@ -12,6 +12,8 @@ interface PaidAmountsModalProps {
   }>;
   amount: string;
   handleMultipleSelectFriend: (data: any) => void;
+  paidBy: any;
+  setPaidBy: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface PaidAmounts {
@@ -27,7 +29,10 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
   memberDetailsArray,
   amount,
   handleMultipleSelectFriend,
+  paidBy,
+  setPaidBy
 }) => {
+  console.log(paidBy);
   const [adjustSplitModal, setAdjustSplitModal] = useState(false);
   const [paidAmounts, setPaidAmounts] = useState<PaidAmounts>({});
 
@@ -36,7 +41,7 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
     const initialPaidAmounts: PaidAmounts = {};
     memberDetailsArray.forEach((member) => {
       initialPaidAmounts[member.id] = {
-        amount: "",
+        amount: paidBy[member.id]?.amount || "", // Ensure it syncs with `paidBy`
         name: member.name,
       };
     });
@@ -44,12 +49,13 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
   }, [memberDetailsArray]);
 
   const handleAmountChange = (id: string, value: string, name: string) => {
+    setPaidBy((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], amount: value, name }
+    }));
     setPaidAmounts((prev) => ({
       ...prev,
-      [id]: {
-        amount: value,
-        name: name,
-      },
+      [id]: { amount: value, name }
     }));
   };
 
@@ -66,7 +72,7 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
   );
   const totalAmount = parseFloat(amount) || 0;
   const remaining = totalAmount - totalPaid;
-
+console.log(paidAmounts);
   return (
     <div>
       {adjustSplitModal && (
@@ -126,12 +132,18 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
                   </div>
                 </div>
                 <Input
-                  placeholder="₹ 0.00"
+                  placeholder="₹ 0"
                   type="number"
-                  value={paidAmounts[friend.id]?.amount}
-                  onChange={(e) =>
-                    handleAmountChange(friend.id, e.target.value, friend.name)
+                  value={paidBy[friend.id]?.amount ?? ''}
+                  onChange={(e) => {
+                        handleAmountChange(friend.id, e.target.value, friend.name);
+                      }
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === ".") {
+                      e.preventDefault();
+                    }
+                  }}
                   className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:ring-0"
                 />
               </List.Item>
@@ -160,6 +172,7 @@ const PaidAmountsModal: React.FC<PaidAmountsModalProps> = ({
             <Button
               className="!bg-[#B57EDC] !border-[#283039] w-full"
               onClick={handleConfirm}
+              disabled={totalPaid === parseFloat(totalAmount.toFixed(2)) ? false : true}
             >
               Confirm
             </Button>

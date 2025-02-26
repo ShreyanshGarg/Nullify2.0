@@ -16,6 +16,7 @@ interface WhoPaidModalProps {
     };
   };
   amount: string;
+  setPaidBy: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
@@ -24,6 +25,7 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
   updatePaidBy,
   paidBy,
   amount,
+  setPaidBy,
 }) => {
   const params = useParams();
   const group_id = params.id;
@@ -52,6 +54,7 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
     updatePaidBy(data);
     setIsWhoPaidModalOpen(false);
   };
+  // console.log(paidBy);
 
   const handleMultipleSelectFriend = (paidAmounts: any) => {
     console.log(paidAmounts);
@@ -59,7 +62,6 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
     setPaidAmountsModal(false);
     setIsWhoPaidModalOpen(false);
   };
-
   return (
     <div>
       {paidAmountsModal && (
@@ -69,6 +71,8 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
           memberDetailsArray={memberDetailsArray}
           amount={amount}
           handleMultipleSelectFriend={handleMultipleSelectFriend}
+          paidBy={paidBy}
+          setPaidBy={setPaidBy}
         />
       )}
       <Modal
@@ -127,8 +131,8 @@ const WhoPaidModal: React.FC<WhoPaidModalProps> = ({
 
                 {/* Tick icon for selected user */}
                 <div className="flex flex-col items-end text-right">
-                  {Object.keys(paidBy).map((paidById) =>
-                    paidById == friend.id ? (
+                  {Object.entries(paidBy).map(([paidById, details]) =>
+                    paidById == friend.id && Number(details.amount) > 0 ? (
                       <CheckOutlined
                         key={paidById}
                         className="text-green-500 text-lg"

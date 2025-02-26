@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, Button, Form } from "antd";
+import { Modal, Input, Button, Form, notification } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
 import WhoPaidModal from "./WhoPaidModal";
 import AdjustSplitModal from "./AdjustSplitModal";
@@ -32,15 +32,15 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const userId = String(user?.sub?.split("|")[1]);
   const params = useParams();
   const group_id = params.id;
+  const groupIdString = Array.isArray(group_id) ? group_id[0] : group_id;
+
   const { data: group, isLoading: isGroupDetailLoading } =
-    useFetchSingleGroupQuery(parseInt(group_id), {
-      skip: !group_id,
-    });
+  useFetchSingleGroupQuery(parseInt(groupIdString || "0"), { skip: !groupIdString });
   const memberDetailsArray = Object.entries(group?.member_details || {}).map(
     ([id, details ]) => ({
       id,
-      name: details.name,
-      amount: details.amount,
+      name: (details as { name: string; amount: number }).name,
+      amount: (details as { name: string; amount: number }).amount,
     })
   );
   const [createGroupExpense] = useCreateGroupExpenseMutation();
@@ -90,55 +90,69 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   };
 
   const onFinish = async (values: any) => {
-    let equalSplitData;
     let formData;
-    // If user clicks add expense submit without clicking on splitWith
-    // Set the split amount
+    let updatedSplitWith = { ...splitwith };
+    let updatedPaidBy = { ...paidBy };
+  
+    // If splitting equally
     if (activeKey === "1") {
       const selectedMembers = Object.keys(splitwith);
-      console.log(splitwith);
-      const equalAmount = (parseFloat(amount) / selectedMembers.length).toFixed(
-        2
-      );
-
-      equalSplitData = selectedMembers.reduce((acc, memberId) => {
+      const equalAmount = (parseFloat(amount) / selectedMembers.length).toFixed(2);
+  
+      updatedSplitWith = selectedMembers.reduce((acc, memberId) => {
         acc[memberId] = {
-          ...acc[memberId],
-          amount: equalAmount,
           name: splitwith[memberId]?.name || "",
+          amount: equalAmount,
         };
         return acc;
       }, {});
-      console.log(equalSplitData);
-      setSplitWith(equalSplitData);
-      formData = {
-        ...values,
-        paid_by: paidBy,
-        split_details: equalSplitData,
-        split_type: activeKey === "1" ? "equally" : "unequally",
-      };
+  
+      setSplitWith(updatedSplitWith);
     }
-    // If user clicks add expense submit without clicking keeping the default paidBy person
-    // Update the paidBy amount for the selected person
+  
     if (Object.keys(paidBy).length === 1) {
-      paidBy[Object.keys(paidBy)[0]] = {
-        ...values,
+      const payerId = Object.keys(paidBy)[0];
+      updatedPaidBy[payerId] = {
+        name: paidBy[payerId]?.name || "",
         amount: amount,
       };
     }
-    // If user clicks add expense submit after clicking on splitWith
-    else {
-      formData = {
-        ...values,
-        paidBy: paidBy,
-        splitwith: splitwith,
-        splitType: activeKey === "1" ? "equally" : "unequally",
-      };
+  
+    formData = {
+      ...values,
+      paidBy: updatedPaidBy,
+      splitwith: updatedSplitWith,
+      splitType: activeKey === "1" ? "equally" : "unequally",
+      group_id: group_id,
+    };
+  
+    console.log("data:", formData);
+  
+    try {
+      const response = await createGroupExpense(formData).unwrap();
+      console.log(response);
+      if (response?.success) {
+        notification.success({
+          message: "Expense Created",
+          description: response.message,
+          placement: "topRight",
+        });
+        setIsExpenseModalOpen(false);
+      } else {
+        throw new Error(response?.error || "Failed to create expense.");
+      }
+    } catch (error) {
+      notification.error({
+        message: "Error adding expense",
+        description:
+          error?.data?.error || "An unexpected error occurred. Please try again.",
+        placement: "topRight",
+      });
+      console.error("Error adding expense:", error);
     }
-
-    console.log("Success:", formData);
-    await createGroupExpense(formData);
   };
+  
+
 
   const handleValidation = () => {
     if (!amount) {
@@ -170,6 +184,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           setIsWhoPaidModalOpen={setIsWhoPaidModalOpen}
           updatePaidBy={updatePaidBy}
           paidBy={paidBy}
+          setPaidBy={setPaidBy}
           amount={amount}
         />
       )}
@@ -247,12 +262,23 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 className="!mb-2"
               >
                 <Input
-                  placeholder="₹ 0.00"
+                  placeholder="₹ 0"
                   type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^(?!0\d)\d*$/.test(value) && value !== "0") {
+                      setAmount(value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === ".") {
+                      e.preventDefault();
+                    }
+                  }}
                   className="h-10 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none"
                 />
+
               </Form.Item>
             </div>
           </Form>
@@ -296,7 +322,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 }}
               >
                 <p className="text-gray text-sm leading-normal line-clamp-1">
-                  Equally
+                  {activeKey == '1' ? "Equally" : "Unequally"}
                 </p>
                 <RightOutlined className="text-gray text-sm" />
               </div>

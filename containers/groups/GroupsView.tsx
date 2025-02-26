@@ -1,16 +1,21 @@
-import { Avatar, Button } from "antd";
-import { ArrowLeftOutlined, CalendarOutlined } from "@ant-design/icons";
+import { Avatar, Button, Spin } from "antd";
+import { ArrowLeftOutlined, CalendarOutlined, SearchOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddExpenseModal from "./AddExpenseModal";
 import SelectBalanceModal from "./SelectBalanceModal";
 import { useParams } from "next/navigation";
 import { useFetchSingleGroupQuery } from "@/provider/redux/services/group";
+import { useFetchGroupExpenseQuery } from "@/provider/redux/services/group";
+import { Expense } from "@/type";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const GroupsViewPage = () => {
   const router = useRouter();
   const params = useParams();
   const group_id = params.id;
+  const { user } = useUser();
+  const loggedInUserId = user?.sub?.split("|")[1] || null;
   const [isAddExpenseModalOpen, setIsExpenseModalOpen] =
     useState<boolean>(false);
   const [isSelectBalanceModalOpen, setIsSelectBalanceModalOpen] =
@@ -22,11 +27,22 @@ const GroupsViewPage = () => {
       skip: !group_id,
     }
   );
-  console.log(group);
-
+  const { data: groupExpenses, isLoading: isLoadingExpenses } =
+    useFetchGroupExpenseQuery(parseInt(group_id), { skip: !group_id });
+  console.log(groupExpenses);
   const handleBackClick = () => {
     router.push("/groups");
   };
+
+  const handleBorrowedAmount = (expense: Expense) => {
+    let borrowedAmount = 0;
+    for(let split of expense.split_details) {
+      if(split.user1 == loggedInUserId || split.user2 == loggedInUserId) {
+        borrowedAmount += split.amount;
+      }
+    } 
+    return borrowedAmount;
+  }
 
   return (
     <>
@@ -61,51 +77,58 @@ const GroupsViewPage = () => {
                 </h1>
                 <p className="text-gray text-base font-normal">$0.00</p>
               </div>
-              <Button
-                type="primary"
-                className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 !bg-[#283039] text-white text-sm font-bold leading-normal tracking-[0.015em] w-50 max-w-[480px]"
-              >
-                Pay
-              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-start">
-                <div className="text-gray text-sm">
-                  Dec <br />
-                  08
+          <div className="flex-1 overflow-y-auto max-h-[calc(100vh-240px)] pb-20">
+            {isLoadingExpenses ? (
+              <div className="flex justify-center mt-10">
+                <Spin size="large" />
+              </div>
+            ) : groupExpenses?.length === 0 ? (
+              <div className="flex justify-center items-center h-full p-10">
+                <SearchOutlined />
+                <p className="text-gray text-base font-normal ml-4">No result found</p>
+              </div>
+            ) : (
+              groupExpenses?.map((expense: Expense) => (
+                <div
+                  key={expense.id}
+                  className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between"
+                >
+                  <div className="flex items-center gap-6">
+                    <div className="flex flex-col items-start">
+                      <div className="text-gray text-xs">
+                        {new Date(expense.date).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center">
+                      <p className="text-white text-md leading-normal line-clamp-1">
+                        {expense.name}
+                      </p>
+                      <p className={`text-gray text-xs`}>
+                        {Object.keys(expense.paid_by).length > 1
+                          ? `Multiple people paid ${expense.total_amount}`
+                          : Object.entries(expense.paid_by).map(
+                              ([id, details]) =>
+                                id === loggedInUserId
+                                  ? `You Paid ${expense.total_amount}`
+                                  : `${details?.name} Paid ${expense.total_amount}`
+                            )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-center">
+                  <p className={`text-${loggedInUserId && expense.paid_by?.hasOwnProperty(loggedInUserId) ? "success" : handleBorrowedAmount(expense) > 0 ? "danger" : "gray"} text-xs text-right`}>
+                  {loggedInUserId && expense.paid_by?.hasOwnProperty(loggedInUserId) ? "You Lent" : handleBorrowedAmount(expense) > 0 ? "You Borrowed" : "You're not involved"}
+                    </p>
+                    <p className={`text-${loggedInUserId && expense.paid_by?.hasOwnProperty(loggedInUserId) ? "success" : handleBorrowedAmount(expense) > 0 ? "danger" : "gray"} text-xs text-right`}>
+                      {loggedInUserId && expense.paid_by?.hasOwnProperty(loggedInUserId) ? `₹ ${parseFloat(expense?.paid_by[loggedInUserId]?.amount || "0").toFixed(2)}` : handleBorrowedAmount(expense) > 0 ? `₹ ${handleBorrowedAmount(expense).toFixed(2)}` : ""}
+                    </p>
+                  </div>
+
                 </div>
-              </div>
-              <div className="flex flex-col justify-center">
-                <p className="text-white text-md leading-normal line-clamp-1">
-                  Dinner
-                </p>
-                <p className="text-danger text-sm leading-normal line-clamp-1">
-                  You Owe
-                </p>
-              </div>
-            </div>
-            <p className="text-danger text-sm">$20</p>
-          </div>
-          <div className="flex items-center gap-4 bg-custom px-4 min-h-[72px] py-2 justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-start">
-                <div className="text-gray text-sm">
-                  Dec <br />
-                  08
-                </div>
-              </div>
-              <div className="flex flex-col justify-center">
-                <p className="text-white text-md leading-normal line-clamp-1">
-                  Dinner
-                </p>
-                <p className="text-success text-sm leading-normal line-clamp-1">
-                  Owes You
-                </p>
-              </div>
-            </div>
-            <p className="text-success text-sm">$20</p>
+              ))
+            )}
           </div>
         </div>
         <div className="fixed bottom-20 left-0 w-full flex flex-col gap-3 p-4 bg-custom max-w-[480px] mx-auto">

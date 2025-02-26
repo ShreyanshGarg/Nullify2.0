@@ -93,4 +93,5 @@ model FriendGroupBalance {
   @@index([friendship_id])
   @@index([group_id])
   @@index([balances])
+  @@unique([friendship_id, group_id])
 }

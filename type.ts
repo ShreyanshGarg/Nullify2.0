@@ -23,6 +23,8 @@ interface Group {
   name: string;
   simplify_debt: boolean;
   member_details: GroupMemberDetails;
+  status: string;
+  amount: number;
 }
 
 interface GroupMemberDetails {
@@ -40,4 +42,17 @@ interface Expense {
   split_details: any;
 }
 
-export type { User, Friend, GroupMemberDetails, Group, Expense };
+interface PaymentDetails {
+  name: string;
+  amount: number;
+}
+
+interface Settlement {
+  user1: string;
+  user2: string;
+  amount: any;
+};
+
+export type { User, Friend, GroupMemberDetails, Group, Expense, PaymentDetails, Settlement };
+
+

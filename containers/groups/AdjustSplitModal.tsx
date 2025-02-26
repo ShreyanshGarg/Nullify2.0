@@ -5,8 +5,6 @@ import {
   CalculatorOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { useFetchSingleGroupQuery } from "@/provider/redux/services/group";
-import { useParams } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 interface AdjustSplitModalProps {
   isAdjustSplitModalOpen: boolean;
@@ -52,14 +50,29 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
   const [paidAmounts, setPaidAmounts] = useState<PaidAmounts>({});
 
   const handleAmountChange = (id: string, value: string, name: string) => {
+    const wholeNumber = Math.floor(parseFloat(value) || 0);
+
     setPaidAmounts((prev) => ({
       ...prev,
       [id]: {
-        amount: value,
+        amount: wholeNumber.toString(),
+        name: name,
+      },
+    }));
+
+    setSplitWith((prev: any) => ({
+      ...prev,
+      [id]: {
+        amount: wholeNumber.toString(),
         name: name,
       },
     }));
   };
+
+  useEffect(() => {
+    setPaidAmounts(splitwith);
+  }, [splitwith]);
+
   const totalPaid = Object.values(paidAmounts).reduce(
     (sum, item) => sum + (parseFloat(item.amount) || 0),
     0
@@ -81,7 +94,7 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
   };
 
   const onCheckBoxChange = (id: string, name: string) => {
-    setSplitWith((prev) => {
+    setSplitWith((prev: any) => {
       const newSplitWith = { ...prev };
 
       console.log(newSplitWith);
@@ -120,7 +133,9 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
       setIsAdjustSplitModalOpen(false);
     }
     if (activeKey === "2") {
-      const unequalSplitData = {};
+      const unequalSplitData: Record<string, { amount: string; name: string }> =
+        {};
+
       let totalAllocated = 0;
 
       memberDetailsArray.forEach((member) => {
@@ -141,13 +156,12 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
       if (Math.abs(totalAllocated - parseFloat(amount)) > 0.01) {
         return;
       }
-      console.log(unequalSplitData);
 
       setSplitWith(unequalSplitData);
       setIsAdjustSplitModalOpen(false);
     }
   };
-
+  console.log(splitwith);
   return (
     <div>
       <Modal
@@ -264,7 +278,14 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                             <Input
                               id={`amount-${friend.id}`}
                               type="number"
-                              placeholder="₹ 0.00"
+                              placeholder="₹ 0"
+                              value={
+                                Math.floor(
+                                  parseFloat(
+                                    splitwith[friend.id]?.amount || "0"
+                                  )
+                                ) || ""
+                              }
                               onChange={(e) =>
                                 handleAmountChange(
                                   friend.id,
@@ -272,6 +293,11 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                                   friend.name
                                 )
                               }
+                              onKeyDown={(e) => {
+                                if (e.key === "-" || e.key === ".") {
+                                  e.preventDefault();
+                                }
+                              }}
                               className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:border-b-white focus:ring-0"
                             />
                           </List.Item>
@@ -308,6 +334,13 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
             <Button
               className="!bg-[#B57EDC] !border-[#283039] w-full"
               onClick={handleSubmit}
+              disabled={
+                activeKey == "2"
+                  ? totalPaid === parseFloat(totalAmount.toFixed(2))
+                    ? false
+                    : true
+                  : false
+              }
             >
               Confirm
             </Button>

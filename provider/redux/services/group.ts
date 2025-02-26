@@ -37,6 +37,12 @@ export const groupApi = createApi({
       }),
       // invalidatesTags: ["GroupExpense"],
     }),
+    fetchGroupExpense: builder.query({
+      query: (groupId: number) => ({
+        url: `/group-expense/${groupId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -45,4 +51,5 @@ export const {
   useFetchGroupQuery,
   useCreateGroupExpenseMutation,
   useFetchSingleGroupQuery,
+  useFetchGroupExpenseQuery,
 } = groupApi;
