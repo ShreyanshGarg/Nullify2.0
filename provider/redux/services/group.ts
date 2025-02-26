@@ -5,7 +5,7 @@ export const groupApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/api",
   }),
-  tagTypes: ["GetGroups"],
+  tagTypes: ["GetGroups", "GroupExpense"],
   endpoints: (builder) => ({
     createGroup: builder.mutation({
       query: (payload) => ({
@@ -27,7 +27,7 @@ export const groupApi = createApi({
         url: `/group/${groupId}`,
         method: "GET",
       }),
-      // providesTags: ["GetGroups"],
+      providesTags: ["GroupExpense"],
     }),
     createGroupExpense: builder.mutation({
       query: (expenseData) => ({
@@ -35,13 +35,14 @@ export const groupApi = createApi({
         method: "POST",
         body: expenseData,
       }),
-      // invalidatesTags: ["GroupExpense"],
+      invalidatesTags: ["GroupExpense"],
     }),
     fetchGroupExpense: builder.query({
       query: (groupId: number) => ({
         url: `/group-expense/${groupId}`,
         method: "GET",
       }),
+      providesTags: ["GroupExpense"],
     }),
   }),
 });
