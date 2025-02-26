@@ -15,6 +15,9 @@ export async function GET(
       const groupExpenses = await prisma.expenses.findMany({
         where: {
             group_id: Number(group_id),
+        },
+        orderBy: {
+          created_at: "desc",
         }
       });
       return NextResponse.json(groupExpenses, { status: 200 });
