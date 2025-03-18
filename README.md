@@ -47,7 +47,7 @@
 <p align="left">
      <img src="https://github.com/user-attachments/assets/d8e400a2-cfb3-4d40-aca8-3aaf955b22ab" width="100"/>
    <img src="https://github.com/user-attachments/assets/57995f4d-8c3c-4ec4-afb4-74fbea984bfb" width="100"/>
-   <img src="https://github.com/user-attachments/assets/52d67a5b-7c7b-4057-98b5-6d10a05720d8" width="100"/>
+   <img src="https://github.com/user-attachments/assets/c7a71d42-3e8d-4a21-a92f-5934566666c2" width="100"/>
 </p>
 
 4. **Create new group.**
