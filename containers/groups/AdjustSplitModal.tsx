@@ -4,50 +4,166 @@ import {
   WalletOutlined,
   CalculatorOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
-import SettleUpModal from "../../components/SettleUpModal";
-
+import { useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 interface AdjustSplitModalProps {
   isAdjustSplitModalOpen: boolean;
   setIsAdjustSplitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  splitwith: PaidAmounts;
+  setSplitWith: (data: any) => void;
+  amount: string;
+  activeKey: string;
+  setActiveKey: React.Dispatch<React.SetStateAction<string>>;
+  memberDetailsArray: Array<{
+    id: string;
+    name: string;
+  }>;
+}
+interface PaidAmounts {
+  [key: string]: {
+    amount: string;
+    name: string;
+  };
 }
 
 const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
   isAdjustSplitModalOpen,
   setIsAdjustSplitModalOpen,
+  splitwith,
+  setSplitWith,
+  amount,
+  activeKey,
+  setActiveKey,
+  memberDetailsArray,
 }) => {
-  const friends = [
-    {
-      id: "234",
-      name: "Kanika",
-      status: "you owe",
-      amount: "$250.00",
-      avatarColor: "#a6a6a6",
-    },
-    {
-      id: "235",
-      name: "Shreyansh Garg",
-      status: "settled up",
-      amount: "",
-      avatarColor: "#0066cc",
-    },
-  ];
+  // const params = useParams();
+  // const group_id = params.id;
+  // const { data: group, isLoading } = useFetchSingleGroupQuery(
+  //   parseInt(group_id),
+  //   {
+  //     skip: !group_id,
+  //   }
+  // );
+  const { user, isLoading: userLoading } = useUser();
+  const [totalAllocated, setTotalAllocated] = useState(0);
+  const [initialAmount, setInitialAmount] = useState("0");
+  const [paidAmounts, setPaidAmounts] = useState<PaidAmounts>({});
 
-  const [showSettleUpModal, setShowSettleUpModal] = useState(false);
-  const [activeKey, setActiveKey] = useState("1"); // Set the default active key
+  const handleAmountChange = (id: string, value: string, name: string) => {
+    const wholeNumber = Math.floor(parseFloat(value) || 0);
+
+    setPaidAmounts((prev) => ({
+      ...prev,
+      [id]: {
+        amount: wholeNumber.toString(),
+        name: name,
+      },
+    }));
+
+    setSplitWith((prev: any) => ({
+      ...prev,
+      [id]: {
+        amount: wholeNumber.toString(),
+        name: name,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    setPaidAmounts(splitwith);
+  }, [splitwith]);
+
+  const totalPaid = Object.values(paidAmounts).reduce(
+    (sum, item) => sum + (parseFloat(item.amount) || 0),
+    0
+  );
+  const totalAmount = parseFloat(amount) || 0;
+  const remaining = totalAmount - totalPaid;
+
+  const userId = String(user?.sub?.split("|")[1]);
+  // const memberDetailsArray = Object.entries(group?.member_details || {}).map(
+  //   ([id, details]) => ({
+  //     id,
+  //     name: details.name,
+  //     amount: details.amount,
+  //   })
+  // );
 
   const handleTabChange = (key: string) => {
     setActiveKey(key); // Update active tab on change
   };
 
+  const onCheckBoxChange = (id: string, name: string) => {
+    setSplitWith((prev: any) => {
+      const newSplitWith = { ...prev };
+
+      console.log(newSplitWith);
+
+      if (newSplitWith[id]) {
+        delete newSplitWith[id];
+      } else {
+        newSplitWith[id] = {
+          amount: "0",
+          name: name || "",
+        };
+      }
+
+      return newSplitWith;
+    });
+  };
+
+  const handleSubmit = () => {
+    if (activeKey === "1") {
+      const selectedMembers = Object.keys(splitwith);
+      console.log(splitwith);
+      const equalAmount = (parseFloat(amount) / selectedMembers.length).toFixed(
+        2
+      );
+
+      const equalSplitData = selectedMembers.reduce((acc, memberId) => {
+        acc[memberId] = {
+          ...acc[memberId],
+          amount: equalAmount,
+          name: splitwith[memberId]?.name || "",
+        };
+        return acc;
+      }, {});
+      console.log(equalSplitData);
+      setSplitWith(equalSplitData);
+      setIsAdjustSplitModalOpen(false);
+    }
+    if (activeKey === "2") {
+      const unequalSplitData: Record<string, { amount: string; name: string }> =
+        {};
+
+      let totalAllocated = 0;
+
+      memberDetailsArray.forEach((member) => {
+        const inputElement = document.getElementById(
+          `amount-${member.id}`
+        ) as HTMLInputElement;
+        const inputAmount = parseFloat(inputElement.value || "0");
+
+        if (inputAmount > 0) {
+          unequalSplitData[member.id] = {
+            amount: inputAmount.toFixed(2),
+            name: member.name,
+          };
+          totalAllocated += inputAmount;
+        }
+      });
+
+      if (Math.abs(totalAllocated - parseFloat(amount)) > 0.01) {
+        return;
+      }
+
+      setSplitWith(unequalSplitData);
+      setIsAdjustSplitModalOpen(false);
+    }
+  };
+  console.log(splitwith);
   return (
     <div>
-      {showSettleUpModal && (
-        <SettleUpModal
-          isSettleUpModalOpen={showSettleUpModal}
-          setIsSettleUpModalOpen={setShowSettleUpModal}
-        />
-      )}
       <Modal
         title={
           <div className="bg-[#111418] p-4 pb-0 flex items-center justify-between">
@@ -101,25 +217,21 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                       </div>
                       <List
                         itemLayout="horizontal"
-                        dataSource={friends}
+                        dataSource={memberDetailsArray}
                         renderItem={(friend) => (
                           <List.Item className="cursor-pointer flex justify-between items-center">
                             <div className="flex items-center gap-4">
-                              <Avatar
-                                style={{
-                                  backgroundColor: friend.avatarColor,
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                {friend.name[0]}
-                              </Avatar>
-                              <div>
-                                <p className="text-white text-[15px] leading-normal line-clamp-1">
-                                  {friend.name}
-                                </p>
-                              </div>
+                              <Avatar>{friend.name[0]}</Avatar>
+                              <p className="text-white text-[15px] leading-normal line-clamp-1">
+                                {friend.name}
+                              </p>
                             </div>
-                            <Checkbox checked={true} />
+                            <Checkbox
+                              onChange={() =>
+                                onCheckBoxChange(friend.id, friend.name)
+                              }
+                              checked={splitwith.hasOwnProperty(friend.id)}
+                            />
                           </List.Item>
                         )}
                       />
@@ -145,13 +257,13 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                       </div>
                       <List
                         itemLayout="horizontal"
-                        dataSource={friends}
+                        dataSource={memberDetailsArray}
                         renderItem={(friend) => (
                           <List.Item className="cursor-pointer flex justify-between items-center">
                             <div className="flex items-center gap-4">
                               <Avatar
                                 style={{
-                                  backgroundColor: friend.avatarColor,
+                                  // backgroundColor: friend.avatarColor,
                                   verticalAlign: "middle",
                                 }}
                               >
@@ -164,8 +276,28 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
                               </div>
                             </div>
                             <Input
+                              id={`amount-${friend.id}`}
                               type="number"
-                              placeholder="₹ 0.00"
+                              placeholder="₹ 0"
+                              value={
+                                Math.floor(
+                                  parseFloat(
+                                    splitwith[friend.id]?.amount || "0"
+                                  )
+                                ) || ""
+                              }
+                              onChange={(e) =>
+                                handleAmountChange(
+                                  friend.id,
+                                  e.target.value,
+                                  friend.name
+                                )
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "-" || e.key === ".") {
+                                  e.preventDefault();
+                                }
+                              }}
                               className="h-7 !w-20 !bg-[#283039] text-white !placeholder-[#9caaba] !border-none focus:border-b-white focus:ring-0"
                             />
                           </List.Item>
@@ -181,17 +313,34 @@ const AdjustSplitModal: React.FC<AdjustSplitModalProps> = ({
             className="fixed bottom-0 left-0 w-full bg-[#111418] p-4"
             style={{ maxWidth: "480px", margin: "0 auto" }}
           >
-            <div className="text-center m-4">
-              <p className="text-white text-md leading-normal">
-                ₹0.00 of ₹0.00
-              </p>
-              <p className="text-gray text-sm leading-normal break-words">
-                ₹0.00 left.
-              </p>
-            </div>
+            {activeKey === "2" ? (
+              <div className="text-center m-4">
+                <p
+                  className={` text-md leading-normal ${
+                    totalPaid > parseFloat(totalAmount.toFixed(2))
+                      ? "!text-red-500"
+                      : totalPaid === parseFloat(totalAmount.toFixed(2))
+                      ? "!text-green-500"
+                      : ""
+                  }`}
+                >
+                  ₹{totalPaid.toFixed(2)} of ₹{totalAmount.toFixed(2)}
+                </p>
+                <p className="text-gray text-sm leading-normal break-words">
+                  ₹{remaining.toFixed(2)} left
+                </p>
+              </div>
+            ) : null}
             <Button
               className="!bg-[#B57EDC] !border-[#283039] w-full"
-              onClick={() => console.log("Add Expense clicked")}
+              onClick={handleSubmit}
+              disabled={
+                activeKey == "2"
+                  ? totalPaid === parseFloat(totalAmount.toFixed(2))
+                    ? false
+                    : true
+                  : false
+              }
             >
               Confirm
             </Button>

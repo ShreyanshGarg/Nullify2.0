@@ -15,6 +15,7 @@ const BottomNavigation = () => {
   const isSignupPage = pathname === "/signup";
   const isLoginPage = pathname === "/login";
   const isForgotPasswordPage = pathname === "/forgot-password";
+  const isVerifyEmailPage = pathname === "/verify-email";
 
   const tabs = [
     { key: "groups", label: "Groups", icon: <TeamOutlined />, href: "/groups" },
@@ -38,7 +39,7 @@ const BottomNavigation = () => {
     },
   ];
 
-  if (isAuthPage || isSignupPage || isLoginPage || isForgotPasswordPage) {
+  if (isAuthPage || isSignupPage || isLoginPage || isForgotPasswordPage || isVerifyEmailPage) {
     return null;
   }
 
